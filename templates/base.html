@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ticker Fisher - Sistema de Tickets</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .container-main {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+        }
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: bold;
+        }
+        .btn-custom {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            padding: 10px 30px;
+            margin: 10px 5px;
+        }
+        .btn-custom:hover {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-main">
+        <h1>🎫 Ticker Fisher</h1>
+        <p class="text-center text-muted mb-4">Sistema de Gestión de Eventos y Tickets</p>
+        
+        <div class="text-center">
+            <a href="/admin/" class="btn btn-custom btn-primary">Panel de Administración</a>
+            <a href="/admin/panel/" class="btn btn-custom btn-info">Panel Admin</a>
+            <a href="/access/" class="btn btn-custom btn-warning">Validación de Acceso</a>
+            <a href="/organizer/" class="btn btn-custom btn-success">Sección Organizador</a>
+            <a href="/user/" class="btn btn-custom btn-secondary">Usuario Asistente</a>
+        </div>
+
+        <hr class="my-4">
+
+        <div class="alert alert-info" role="alert">
+            <strong>¡Bienvenido!</strong> Este es el sistema de gestión de tickets para eventos.
+        </div>
+
+        <p class="text-center text-muted small">
+            © 2026 Ticker Fisher. Sistema en desarrollo.
+        </p>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
