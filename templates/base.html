@@ -1,68 +1,174 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ticker Fisher - Sistema de Tickets</title>
+    <title>{% block title %}Ticker Fisher - Sistema de Tickets{% endblock %}</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <style>
+        :root {
+            --primary-color: #d9d848;
+            --text-muted-color: #666666;
+            --secondary-color: #ebc01f;
+        }
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
             display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: white;
         }
-        .container-main {
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-            padding: 40px;
-            max-width: 600px;
-            width: 100%;
+        main {
+            flex: 1;
         }
-        h1 {
-            color: #667eea;
-            text-align: center;
-            margin-bottom: 30px;
-            font-weight: bold;
+        footer {
+            background-color: #d9d848;
+            color: #333333;
+            padding: 30px 0;
+            margin-top: auto;
         }
-        .btn-custom {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-            padding: 10px 30px;
-            margin: 10px 5px;
+        .text-muted {
+            color: #666666 !important;
         }
-        .btn-custom:hover {
-            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-            color: white;
+        .navbar-dark {
+            background-color: #d9d848 !important;
+        }
+        .navbar-dark .navbar-brand,
+        .navbar-dark .nav-link {
+            color: #333333 !important;
+        }
+        /* Cambiar colores azules a #ebc01f */
+        .btn-primary {
+            background-color: #ebc01f !important;
+            border-color: #ebc01f !important;
+            color: #333333 !important;
+        }
+        .btn-primary:hover {
+            background-color: #cc9319 !important;
+            border-color: #cc9319 !important;
+        }
+        .btn-outline-primary {
+            color: #ebc01f !important;
+            border-color: #ebc01f !important;
+        }
+        .btn-outline-primary:hover {
+            background-color: #ebc01f !important;
+            border-color: #ebc01f !important;
+            color: #333333 !important;
+        }
+        .bg-primary {
+            background-color: #ebc01f !important;
+            color: #333333 !important;
+        }
+        .bg-info {
+            background-color: #ebc01f !important;
+            color: #333333 !important;
+        }
+        .alert-info {
+            background-color: #fff3cd !important;
+            border-color: #ebc01f !important;
+            color: #333333 !important;
+        }
+        .badge.bg-primary {
+            background-color: #ebc01f !important;
+            color: #333333 !important;
         }
     </style>
 </head>
 <body>
-    <div class="container-main">
-        <h1>🎫 Ticker Fisher</h1>
-        <p class="text-center text-muted mb-4">Sistema de Gestión de Eventos y Tickets</p>
-        
-        <div class="text-center">
-            <a href="/admin/" class="btn btn-custom btn-primary">Panel de Administración</a>
-            <a href="/admin/panel/" class="btn btn-custom btn-info">Panel Admin</a>
-            <a href="/access/" class="btn btn-custom btn-warning">Validación de Acceso</a>
-            <a href="/organizer/" class="btn btn-custom btn-success">Sección Organizador</a>
-            <a href="/user/" class="btn btn-custom btn-secondary">Usuario Asistente</a>
+    <!-- Barra de Navegación -->
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #d9d848;">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{% url 'home' %}">🎫 Ticker Fisher</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    {% if user.is_authenticated %}
+                        {% if user.es_admin %}
+                            <li class="nav-item">
+                                <a class="nav-link btn btn-outline-warning ms-2" href="/admin/" target="_blank">
+                                    ⚙️ Panel de Admin
+                                </a>
+                            </li>
+                        {% endif %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                                👤 {{ user.get_full_name|default:user.username }}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="{% url 'accounts:perfil' %}">Mi Perfil</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{% url 'accounts:logout' %}">Cerrar Sesión</a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'accounts:login' %}">Iniciar Sesión</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'accounts:registro' %}">Registrarse</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
         </div>
+    </nav>
 
-        <hr class="my-4">
-
-        <div class="alert alert-info" role="alert">
-            <strong>¡Bienvenido!</strong> Este es el sistema de gestión de tickets para eventos.
+    <!-- Mensajes -->
+    {% if messages %}
+        <div class="container-fluid mt-3">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
         </div>
+    {% endif %}
 
-        <p class="text-center text-muted small">
-            © 2026 Ticker Fisher. Sistema en desarrollo.
-        </p>
-    </div>
+    <!-- Contenido Principal -->
+    <main>
+        {% block content %}
+        <div class="container mt-5">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="card shadow">
+                        <div class="card-body p-5 text-center">
+                            <h1 class="mb-4">🎫 Ticker Fisher</h1>
+                            <p class="lead" style="color: #666666;" style="margin-bottom: 1.5rem;">Sistema de Gestión de Eventos y Tickets</p>
+                            
+                            {% if not user.is_authenticated %}
+                                <div class="mt-4">
+                                    <a href="{% url 'accounts:login' %}" class="btn btn-primary btn-lg me-2">Iniciar Sesión</a>
+                                    <a href="{% url 'accounts:registro' %}" class="btn btn-outline-primary btn-lg">Registrarse</a>
+                                </div>
+                            {% else %}
+                                <p style="color: #666666;">Bienvenido, <strong>{{ user.get_full_name|default:user.username }}</strong></p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Ticker Fisher</h5>
+                    <p style="color: #ffffff;">Sistema profesional de gestión de eventos y tickets.</p>
+                </div>
+                <div class="col-md-6 text-end">
+                    <p style="color: #ffffff;">© 2026 Ticker Fisher. Todos los derechos reservados.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 </body>

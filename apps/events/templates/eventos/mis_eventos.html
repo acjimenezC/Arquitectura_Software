@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block title %}Mis Eventos{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2>Mis Eventos</h2>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'events:crear' %}" class="btn btn-primary">+ Crear Nuevo Evento</a>
+        </div>
+    </div>
+    
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+    
+    {% if eventos %}
+        <div class="row">
+            {% for evento in eventos %}
+                <div class="col-md-4 mb-4">
+                    <div class="card shadow">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ evento.nombre }}</h5>
+                            <p class="card-text" style="color: #666666;">
+                                <strong>📍 Lugar:</strong> {{ evento.lugar }}<br>
+                                <strong>📅 Fecha:</strong> {{ evento.fecha|date:"d/m/Y" }}<br>
+                                <strong>🕐 Hora:</strong> {{ evento.hora|time:"H:i" }}
+                            </p>
+                            {% if evento.descripcion %}
+                                <p class="card-text" style="color: #666666; font-size: 0.9rem;">
+                                    {{ evento.descripcion|truncatewords:20 }}
+                                </p>
+                            {% endif %}
+                            <div class="mt-3">
+                                <span class="badge {% if evento.activo %}bg-success{% else %}bg-danger{% endif %}">
+                                    {% if evento.activo %}Activo{% else %}Inactivo{% endif %}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="card-footer" style="background-color: #f8f9fa;">
+                            <small style="color: #666666;">Creado: {{ evento.fecha_creacion|date:"d/m/Y H:i" }}</small>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info" style="background-color: #fff3cd; border-color: #ebc01f; color: #333333;">
+            <strong>No tienes eventos creados.</strong> 
+            <a href="{% url 'events:crear' %}" style="color: #ebc01f; font-weight: bold;">Crea uno ahora</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

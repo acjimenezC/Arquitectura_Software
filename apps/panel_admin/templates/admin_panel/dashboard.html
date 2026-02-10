@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %}Panel Admin - Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+	<div class="d-flex justify-content-between align-items-center mb-4">
+		<h2>Panel de Administración</h2>
+	</div>
+
+	<div class="row g-3">
+		<div class="col-md-3">
+			<div class="card text-center shadow-sm">
+				<div class="card-body">
+					<h5 class="card-title">Usuarios</h5>
+					<p class="display-6 mb-0">{{ estadisticas.total_usuarios|default:0 }}</p>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-3">
+			<div class="card text-center shadow-sm">
+				<div class="card-body">
+					<h5 class="card-title">Roles</h5>
+					<p class="display-6 mb-0">{{ estadisticas.total_roles|default:0 }}</p>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-3">
+			<div class="card text-center shadow-sm">
+				<div class="card-body">
+					<h5 class="card-title">Activos</h5>
+					<p class="display-6 mb-0">{{ estadisticas.usuarios_activos|default:0 }}</p>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-3">
+			<div class="card text-center shadow-sm">
+				<div class="card-body">
+					<h5 class="card-title">Inactivos</h5>
+					<p class="display-6 mb-0">{{ estadisticas.usuarios_inactivos|default:0 }}</p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="mt-4">
+		<a href="{% url 'panel_admin:usuarios' %}" class="btn btn-outline-primary me-2">Gestionar Usuarios</a>
+		<a href="{% url 'panel_admin:reportes' %}" class="btn btn-outline-secondary">Ver Reportes</a>
+	</div>
+</div>
+{% endblock %}

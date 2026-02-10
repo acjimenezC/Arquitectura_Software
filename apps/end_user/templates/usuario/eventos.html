@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}Eventos{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+	<h2>Eventos Disponibles</h2>
+	<p style="color: #666666;">Lista de eventos abiertos para reserva.</p>
+
+	<div class="row">
+		<!-- Ejemplo: repetir con un for si se proporciona contexto 'eventos' -->
+		{% for evento in eventos|default:[] %}
+			<div class="col-md-4">
+				<div class="card mb-3 shadow-sm">
+					<div class="card-body">
+						<h5 class="card-title">{{ evento.titulo }}</h5>
+						<p class="card-text" style="color: #666666;">{{ evento.fecha }}</p>
+						<a href="#" class="btn btn-primary btn-sm">Ver / Reservar</a>
+					</div>
+				</div>
+			</div>
+		{% empty %}
+			<div class="col-12">
+				<div class="alert alert-info">No hay eventos disponibles actualmente.</div>
+			</div>
+		{% endfor %}
+	</div>
+</div>
+{% endblock %}

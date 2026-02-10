@@ -22,6 +22,8 @@ from django.views.generic import TemplateView
 
 urlpatterns = [
     path('', TemplateView.as_view(template_name='base.html'), name='home'),
+    path('accounts/', include('apps.accounts.urls')),
+    path('eventos/', include('apps.events.urls')),
     path('admin/panel/', include('apps.panel_admin.urls')),
     path('access/', include('apps.access.urls')),
     path('organizer/', include('apps.organizer.urls')),
