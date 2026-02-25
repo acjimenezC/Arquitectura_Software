@@ -1,0 +1,178 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}TICKERFISHER - Sistema de Tickets y Reserva de Eventos{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+    <nav>
+        <a href="{% url 'home' %}" class="logo">TICKER<span>FISHER</span></a>
+        <div class="nav-links">
+            <a href="#featured">Explorar Eventos</a>
+            <a href="#categories">Corporativo</a>
+            <a href="#">Soporte</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'accounts:logout' %}" class="btn-login">Cerrar Sesión</a>
+            {% else %}
+                <a href="{% url 'accounts:login' %}" class="btn-login">Acceso Cliente</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    {% block content %}
+    <section class="hero">
+        <h1>Experiencias Exclusivas para Personas Exigentes</h1>
+        <p>Reserva tus entradas para los eventos corporativos, culturales y deportivos más importantes del mundo.</p>
+        
+        <div class="search-container">
+            <div class="search-group">
+                <label>¿Qué buscas?</label>
+                <input type="text" placeholder="Concierto, gala, foro...">
+            </div>
+            <div class="search-group">
+                <label>Ubicación</label>
+                <select>
+                    <option>Cualquier ciudad</option>
+                    <option>Madrid</option>
+                    <option>Bogotá</option>
+                    <option>Ciudad de México</option>
+                </select>
+            </div>
+            <div class="search-group">
+                <label>Fecha</label>
+                <input type="date">
+            </div>
+            <button class="btn-search">BUSCAR</button>
+        </div>
+    </section>
+
+    <main class="section-container featured-events" id="featured">
+        <div class="section-header">
+            <div class="title-area">
+                <h2>Eventos Destacados</h2>
+                <div class="underline"></div>
+            </div>
+            <a href="#" class="view-all">Ver todos &rarr;</a>
+        </div>
+
+        <div class="events-grid">
+            <!-- Card 1 -->
+            <div class="event-card">
+                <div class="event-img" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    <span class="category-tag">Corporativo</span>
+                </div>
+                <div class="event-content">
+                    <p class="event-date">24 OCT, 2024 • 09:00 AM</p>
+                    <h3 class="event-title">Global Tech Summit: Future of AI</h3>
+                    <div class="event-footer">
+                        <span class="price">$249.00</span>
+                        <button class="btn-book">Reservar</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="event-card">
+                <div class="event-img" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                    <span class="category-tag">Música</span>
+                </div>
+                <div class="event-content">
+                    <p class="event-date">15 NOV, 2024 • 08:00 PM</p>
+                    <h3 class="event-title">Sinfónica de Gala: Noche de Clásicos</h3>
+                    <div class="event-footer">
+                        <span class="price">$120.00</span>
+                        <button class="btn-book">Reservar</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="event-card">
+                <div class="event-img" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                    <span class="category-tag">Deportes</span>
+                </div>
+                <div class="event-content">
+                    <p class="event-date">02 DIC, 2024 • 10:00 AM</p>
+                    <h3 class="event-title">Masters Invitational Championship</h3>
+                    <div class="event-footer">
+                        <span class="price">$450.00</span>
+                        <button class="btn-book">Reservar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <section class="categories-section" id="categories">
+        <div class="section-header" style="justify-content: center; text-align: center;">
+            <div class="title-area">
+                <h2 style="margin-bottom: 15px;">Explora por Categoría</h2>
+                <div class="underline" style="margin: 0 auto;"></div>
+            </div>
+        </div>
+        
+        <div class="cat-grid">
+            <div class="cat-card">
+                <strong>Empresariales</strong>
+            </div>
+            <div class="cat-card">
+                <strong>Conciertos</strong>
+            </div>
+            <div class="cat-card">
+                <strong>Deportes</strong>
+            </div>
+            <div class="cat-card">
+                <strong>Festivales</strong>
+            </div>
+        </div>
+    </section>
+    {% endblock %}
+
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <a href="{% url 'home' %}" class="logo">TICKER<span>FISHER</span></a>
+                <p>Plataforma líder en gestión de reservas y ticketing de alto nivel para el sector corporativo y privado.</p>
+            </div>
+            <div class="footer-links">
+                <h4>Navegación</h4>
+                <ul>
+                    <li><a href="{% url 'home' %}">Inicio</a></li>
+                    <li><a href="#featured">Calendario</a></li>
+                    <li><a href="#">Precios</a></li>
+                    <li><a href="#">Ayuda</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Legal</h4>
+                <ul>
+                    <li><a href="#">Términos y Condiciones</a></li>
+                    <li><a href="#">Privacidad</a></li>
+                    <li><a href="#">Política de Reembolso</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Contacto</h4>
+                <ul>
+                    <li><a href="mailto:soporte@tickerfisher.com">ventas@tickerfisher.com</a></li>
+                    <li><a href="tel:+1234567890">+34 900 123 456</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="copy">
+            &copy; 2026 TICKERFISHER International. Todos los derechos reservados.
+        </div>
+    </footer>
+
+    <script src="{% static 'js/script.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

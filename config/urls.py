@@ -21,7 +21,7 @@ from django.conf.urls.static import static
 from django.views.generic import TemplateView
 
 urlpatterns = [
-    path('', TemplateView.as_view(template_name='base.html'), name='home'),
+    path('', TemplateView.as_view(template_name='landing.html'), name='home'),
     path('accounts/', include('apps.accounts.urls')),
     path('eventos/', include('apps.events.urls')),
     path('admin/panel/', include('apps.panel_admin.urls')),
@@ -31,7 +31,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 ]
 
-# Servir archivos media en desarrollo
+# Servir archivos media y static en desarrollo
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.BASE_DIR / 'static')

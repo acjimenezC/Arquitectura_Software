@@ -1,29 +1,53 @@
-{% extends 'base.html' %}
+{% extends 'landing.html' %}
+{% load static %}
 
-{% block title %}Eventos{% endblock %}
+{% block title %}Eventos Disponibles{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-	<h2>Eventos Disponibles</h2>
-	<p style="color: #666666;">Lista de eventos abiertos para reserva.</p>
+<section class="events-hero">
+    <h1>Eventos Disponibles</h1>
+    <p>Reserva tus entradas para los próximos eventos exclusivos</p>
+</section>
 
-	<div class="row">
-		<!-- Ejemplo: repetir con un for si se proporciona contexto 'eventos' -->
-		{% for evento in eventos|default:[] %}
-			<div class="col-md-4">
-				<div class="card mb-3 shadow-sm">
-					<div class="card-body">
-						<h5 class="card-title">{{ evento.titulo }}</h5>
-						<p class="card-text" style="color: #666666;">{{ evento.fecha }}</p>
-						<a href="#" class="btn btn-primary btn-sm">Ver / Reservar</a>
-					</div>
-				</div>
-			</div>
-		{% empty %}
-			<div class="col-12">
-				<div class="alert alert-info">No hay eventos disponibles actualmente.</div>
-			</div>
-		{% endfor %}
-	</div>
-</div>
-{% endblock %}
+<section class="events-user-section">
+    <div class="section-container">
+        <div class="section-header">
+            <div class="title-area">
+                <h2>Descubre Nuestros Eventos</h2>
+                <div class="underline"></div>
+            </div>
+        </div>
+
+        <div class="events-grid">
+            <!-- Ejemplo: repetir con un for si se proporciona contexto 'eventos' -->
+            {% for evento in eventos|default:[] %}
+                <div class="event-card">
+                    <div class="event-img" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                        <span class="category-tag">Evento</span>
+                    </div>
+                    <div class="event-content">
+                        <p class="event-date">{{ evento.fecha }}</p>
+                        <h3 class="event-title">{{ evento.titulo }}</h3>
+                        <div class="event-footer">
+                            <span class="price">$249.00</span>
+                            <button class="btn-book">Reservar</button>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="col-12">
+                    <div class="alert-message">
+                        <span>No hay eventos disponibles actualmente. Vuelve pronto para ver nuevas opciones.</span>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        {% if not eventos %}
+            <div class="empty-state">
+                <h3>Próximamente</h3>
+                <p>Estamos preparando los mejores eventos para ti.</p>
+            </div>
+        {% endif %}
+    </div>
+</section>
