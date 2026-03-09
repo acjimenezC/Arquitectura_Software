@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from django.db.models import Q
-from .models import Evento
+from django.contrib.auth.decorators import login_required
+from apps.events.models import Evento
 
 
 def eventos_list_view(request):

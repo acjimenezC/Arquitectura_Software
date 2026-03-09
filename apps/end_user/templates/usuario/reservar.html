@@ -19,7 +19,7 @@
 						<label class="form-label">Número de entradas</label>
 						<input class="form-control" type="number" name="cantidad" min="1" max="{{ disponibles }}" value="1">
 					</div>
-					<button class="btn btn-primary">Reservar</button>
+					<button type="submit" class="btn btn-primary">Reservar</button>
 				</form>
 			{% else %}
 				<p class="text-danger">No hay tickets disponibles para este evento.</p>

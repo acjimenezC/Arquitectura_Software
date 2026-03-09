@@ -10,9 +10,17 @@
 </section>
 
 <div style="margin-left: 50px;">
-    <a href="{% url 'end_user:mis_tickets' %}" style="background-color: #666666; color: white; padding: 5px 5px; text-decoration: none; border-radius: 5px; margin-right: 20px;">Mis Tickets</a>
+    <a href="{% url 'end_user:mis_tickets' %}" class="btn-search" style="color: white; padding: 5px 5px; text-decoration: none; border-radius: 5px; margin-right: 20px;">
+        Mis Tickets
+    </a>
 
-    <a href="{% url 'accounts:perfil' %}" style="background-color: #666666; color: white; padding: 5px 5px; text-decoration: none; border-radius: 5px;">Mi Perfil</a>
+    <a href="{% url 'accounts:perfil' %}" class="btn-search" style="color: white; padding: 5px 5px; text-decoration: none; border-radius: 5px; margin-right: 20px;">
+        Mi Perfil
+    </a>
+
+    <a href="{% url 'events:crear_evento' %}" class="btn-search" style="color: white; padding: 5px 5px; text-decoration: none; border-radius: 5px; margin-right: 20px;">
+        Crear Evento
+    </a>
 </div>
 
 <section class="events-user-section">

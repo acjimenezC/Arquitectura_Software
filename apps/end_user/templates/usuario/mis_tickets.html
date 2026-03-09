@@ -1,4 +1,5 @@
 {% extends 'landing.html' %}
+{% load static %}
 
 {% block title %}Mis Tickets{% endblock %}
 
@@ -26,11 +27,11 @@
 				<div class="empty-state" style="margin-top: 50px; margin-bottom: 50px; text-align: center;">
 					<h3>¡Explora nuestros eventos!</h3>
 					<p>Reserva tus entradas para los próximos eventos exclusivos.</p>
-					<a href="{% url 'end_user:eventos' %}" class="btn btn-primary" style="background-color: #666666; color: white; padding: 5px 5px; text-decoration: none; border-radius: 5px; margin: 10px auto;">
+					<a href="{% url 'end_user:eventos' %}" class="btn-search" style="color: white; padding: 5px 5px; text-decoration: none; border-radius: 5px; margin: 10px auto;">
 						Ver Eventos
 					</a>
 					<p>O crea tus propios eventos.</p>
-					<a href="{% url 'events:crear_evento' %}" class="btn btn-primary" style="background-color: #666666; color: white; padding: 5px 5px; text-decoration: none; border-radius: 5px; margin: 10px auto;">
+					<a href="{% url 'events:crear_evento' %}" class="btn-search" style="color: white; padding: 5px 5px; text-decoration: none; border-radius: 5px; margin: 10px;">
 						Crear Evento
 					</a>
 					<div class="empty-state" style="margin-top: 10px;">
