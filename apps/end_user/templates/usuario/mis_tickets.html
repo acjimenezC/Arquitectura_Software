@@ -1,10 +1,10 @@
-{% extends 'base.html' %}
+{% extends 'landing.html' %}
 
 {% block title %}Mis Tickets{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
-	<h2>Mis Tickets</h2>
+	<h2 style="margin-top: 20px; text-align: center;">Mis Tickets</h2>
 	<div class="card mt-3">
 		<div class="card-body">
 			{% if tickets %}
@@ -20,7 +20,20 @@
 					{% endfor %}
 				</ul>
 			{% else %}
-				<div class="alert alert-info">No tienes tickets comprados.</div>
+				<div class="alert alert-info" style="margin-bottom: 750px; text-align: center;">
+					No tienes tickets comprados.
+				</div>
+				<div class="empty-state" style="margin-top: 50px; margin-bottom: 50px; text-align: center;">
+					<h3>¡Explora nuestros eventos!</h3>
+					<p>Reserva tus entradas para los próximos eventos exclusivos.</p>
+					<a href="{% url 'end_user:eventos' %}" class="btn btn-primary" style="background-color: #666666; color: white; padding: 5px 5px; text-decoration: none; border-radius: 5px; margin: 10px auto;">
+						Ver Eventos
+					</a>
+					<p>O crea tus propios eventos.</p>
+					<a href="{% url 'events:crear_evento' %}" class="btn btn-primary" style="background-color: #666666; color: white; padding: 5px 5px; text-decoration: none; border-radius: 5px; margin: 10px auto;">
+						Crear Evento
+					</a>
+					<div class="empty-state" style="margin-top: 10px;">
 			{% endif %}
 		</div>
 	</div>

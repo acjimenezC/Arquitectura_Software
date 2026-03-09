@@ -1,21 +1,29 @@
-{% extends 'base.html' %}
+{% extends 'landing.html' %}
 
-{% block title %}Reservar{% endblock %}
+{% block title %}Reservar - {{ evento.nombre }}{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-	<h2>Reservar Ticket</h2>
-	<div class="card mt-3">
+<div class="container mt-4" style="margin-bottom: 1000px; text-align: center;">
+	<h2 style="margin-top: 20px;">Reservar Ticket</h2>
+	<div class="card mt-3" style="max-width: 600px; margin: 50px auto;">
 		<div class="card-body">
-			<p style="color: #666666;">Formulario de reserva (plantilla de ejemplo).</p>
-			<form method="post">
-				{% csrf_token %}
-				<div class="mb-3">
-					<label class="form-label">Número de entradas</label>
-					<input class="form-control" type="number" name="cantidad" min="1" value="1">
-				</div>
-				<button class="btn btn-primary">Reservar</button>
-			</form>
+			<h5 class="card-title">{{ evento.nombre }}</h5>
+			<p class="card-text">{{ evento.descripcion }}</p>
+			<p><strong>Lugar:</strong> {{ evento.lugar }}</p>
+			<p><strong>Fecha:</strong> {{ evento.fecha }} a las {{ evento.hora }}</p>
+			<p><strong>Tickets disponibles:</strong> {{ disponibles }}</p>
+			{% if disponibles > 0 %}
+				<form method="post">
+					{% csrf_token %}
+					<div class="mb-3">
+						<label class="form-label">Número de entradas</label>
+						<input class="form-control" type="number" name="cantidad" min="1" max="{{ disponibles }}" value="1">
+					</div>
+					<button class="btn btn-primary">Reservar</button>
+				</form>
+			{% else %}
+				<p class="text-danger">No hay tickets disponibles para este evento.</p>
+			{% endif %}
 		</div>
 	</div>
 </div>

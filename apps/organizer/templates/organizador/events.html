@@ -16,7 +16,7 @@
                 <h2>Tus Eventos</h2>
                 <div class="underline"></div>
             </div>
-            <a href="#" class="btn-create-event">+ Nuevo Evento</a>
+            <a href="{% url 'events:crear' %}" class="btn-create-event">+ Nuevo Evento</a>
         </div>
 
         <div class="organizer-content">
@@ -32,7 +32,7 @@
                     <h3>Acciones Rápidas</h3>
                     <ul class="action-list">
                         <li>
-                            <a href="#" class="action-link">
+                            <a href="{% url 'events:crear' %}" class="action-link">
                                 <span class="action-icon">➕</span>
                                 <span>Nuevo Evento</span>
                             </a>
@@ -44,7 +44,7 @@
                             </a>
                         </li>
                         <li>
-                            <a href="#" class="action-link">
+                            <a href="{% url 'organizer:reservations' %}" class="action-link">
                                 <span class="action-icon">👥</span>
                                 <span>Gestionar Reservas</span>
                             </a>

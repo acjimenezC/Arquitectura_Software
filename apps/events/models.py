@@ -12,6 +12,7 @@ class Evento(models.Model):
     organizador = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='eventos')
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     activo = models.BooleanField(default=True)
+    capacidad = models.PositiveIntegerField(default=100)  # Capacidad máxima del evento
     
     class Meta:
         verbose_name = 'Evento'
@@ -20,3 +21,9 @@ class Evento(models.Model):
     
     def __str__(self):
         return self.nombre
+    
+    def tickets_vendidos(self):
+        return self.tickets.filter(activo=True).count()
+    
+    def tickets_disponibles(self):
+        return self.capacidad - self.tickets_vendidos()

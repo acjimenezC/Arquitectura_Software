@@ -19,6 +19,7 @@
             <a href="#featured">Explorar Eventos</a>
             <a href="#categories">Corporativo</a>
             <a href="#">Soporte</a>
+            <a href="{% url 'end_user:eventos' %}">Crear Evento</a>
             {% if user.is_authenticated %}
                 <a href="{% url 'accounts:logout' %}" class="btn-login">Cerrar Sesión</a>
             {% else %}
@@ -55,7 +56,7 @@
     </section>
 
     <main class="section-container featured-events" id="featured">
-        <div class="section-header">
+        <div class="section-header" style="margin-left: 50px; margin-top: 50px;">
             <div class="title-area">
                 <h2>Eventos Destacados</h2>
                 <div class="underline"></div>
@@ -63,9 +64,11 @@
             <a href="#" class="view-all">Ver todos &rarr;</a>
         </div>
 
-        <div class="events-grid">
+        <div class="events-grid" style="margin-left: 50px;">
+
+            
             <!-- Card 1 -->
-            <div class="event-card">
+            {% comment %} <div class="event-card">
                 <div class="event-img" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
                     <span class="category-tag">Corporativo</span>
                 </div>
@@ -107,7 +110,40 @@
                         <button class="btn-book">Reservar</button>
                     </div>
                 </div>
+            </div> {% endcomment %}
+
+
+            <div class="events-grid">
+            <!-- Ejemplo: repetir con un for si se proporciona contexto 'eventos' -->
+            {% for evento in eventos %}
+                <div class="event-card">
+                    <div class="event-img" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                        <span class="category-tag">Evento</span>
+                    </div>
+                    <div class="event-content">
+                        <p class="event-date">{{ evento.fecha }}</p>
+                        <h3 class="event-title">{{ evento.nombre }}</h3>
+                        <div class="event-footer">
+                            <span class="price">$249.00</span>
+                            <a href="{% url 'end_user:reservar' evento.id %}" class="btn-book">Reservar</a>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="col-12">
+                    <div class="alert-message">
+                        <span>No hay eventos disponibles actualmente. Vuelve pronto para ver nuevas opciones.</span>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        {% if not eventos %}
+            <div class="empty-state">
+                <h3>Próximamente</h3>
+                <p>Estamos preparando los mejores eventos para ti.</p>
             </div>
+        {% endif %}
         </div>
     </main>
 

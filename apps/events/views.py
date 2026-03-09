@@ -30,6 +30,7 @@ def crear_evento_view(request):
 
 @login_required(login_url='accounts:login')
 @require_rols('organizador', 'admin')
+
 def mis_eventos_view(request):
     """Vista para ver los eventos creados por el usuario"""
     eventos = Evento.objects.filter(organizador=request.user)
