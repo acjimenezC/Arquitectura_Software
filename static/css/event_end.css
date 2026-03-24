@@ -1,4 +1,4 @@
-<style>
+
     .organizer-hero {
         background: linear-gradient(135deg, var(--negro-principal) 0%, var(--negro-suave) 100%);
         color: var(--blanco);
@@ -186,4 +186,3 @@
             font-size: 2rem;
         }
     }
-</style>

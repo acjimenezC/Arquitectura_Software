@@ -99,6 +99,8 @@
                                             Asistente a eventos
                                         {% elif radio.choice_label == 'organizador' %}
                                             Organizador de eventos
+                                        {% elif radio.choice_label == 'admin' %}
+                                            Administrador del sistema
                                         {% endif %}
                                     </small>
                                 </div>
@@ -110,6 +112,23 @@
                         <span class="error-text">{{ form.rol.errors.0 }}</span>
                     {% endif %}
                 </div>
+
+                <div class="form-group" id="admin_code_container" style="display: none;">
+                    <label for="{{ form.admin_code.id_for_label }}">{{ form.admin_code.label }}</label>
+                    {{ form.admin_code }}
+                    <small style="color: #666; margin-top: 5px;">Solicita el código al desarrollador</small>
+                    {% if form.admin_code.errors %}
+                        <span class="error-text">{{ form.admin_code.errors.0 }}</span>
+                    {% endif %}
+                </div>
+
+                {% if form.non_field_errors %}
+                    <div style="margin-top: 15px;">
+                        {% for error in form.non_field_errors %}
+                            <span class="error-text" style="display: block;">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
 
                 <button type="submit" class="btn-register">CREAR CUENTA</button>
             </form>
@@ -153,6 +172,9 @@
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         const roleCards = document.querySelectorAll(".role-card");
+        const adminCodeContainer = document.getElementById("admin_code_container");
+        const adminCodeInput = document.getElementById("id_admin_code");
+        const radioButtons = document.querySelectorAll("input[name='rol']");
 
         roleCards.forEach(card => {
             card.addEventListener("click", function() {
@@ -161,6 +183,55 @@
 
                 roleCards.forEach(c => c.classList.remove("selected"));
                 this.classList.add("selected");
+
+                // Mostrar/ocultar campo de código admin
+                const selectedValue = radio.value;
+                const adminRoleId = document.querySelector('[data-value]');
+                
+                // Verificar si es el rol admin
+                let isAdmin = false;
+                radioButtons.forEach(btn => {
+                    if (btn.checked && btn.parentElement.textContent.toLowerCase().includes('admin')) {
+                        isAdmin = true;
+                    }
+                });
+
+                if (isAdmin) {
+                    adminCodeContainer.style.display = 'block';
+                    adminCodeInput.style.display = 'block';
+                    adminCodeInput.required = true;
+                } else {
+                    adminCodeContainer.style.display = 'none';
+                    adminCodeInput.style.display = 'none';
+                    adminCodeInput.required = false;
+                    adminCodeInput.value = '';
+                }
+            });
+        });
+
+        // Escuchar cambios en los radio buttons también
+        radioButtons.forEach(radio => {
+            radio.addEventListener('change', function() {
+                let isAdmin = false;
+                radioButtons.forEach(btn => {
+                    if (btn.checked) {
+                        const label = btn.parentElement.parentElement.querySelector('.role-title');
+                        if (label && label.textContent.toLowerCase().includes('admin')) {
+                            isAdmin = true;
+                        }
+                    }
+                });
+
+                if (isAdmin) {
+                    adminCodeContainer.style.display = 'block';
+                    adminCodeInput.style.display = 'block';
+                    adminCodeInput.required = true;
+                } else {
+                    adminCodeContainer.style.display = 'none';
+                    adminCodeInput.style.display = 'none';
+                    adminCodeInput.required = false;
+                    adminCodeInput.value = '';
+                }
             });
         });
     });

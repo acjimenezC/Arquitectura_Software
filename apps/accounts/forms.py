@@ -77,16 +77,44 @@ class RegistroForm(UserCreationForm):
         })
     )
     rol = forms.ModelChoiceField(
-        queryset=Rol.objects.filter(nombre__in=['usuario', 'organizador']),
+        queryset=Rol.objects.all(),
         required=True,
         widget=forms.RadioSelect(),
         label='Tipo de Cuenta',
         empty_label=None
     )
     
+    admin_code = forms.CharField(
+        max_length=50,
+        required=False,
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Ingresa el código de administrador',
+            'id': 'id_admin_code',
+            'style': 'display: none;',  # Se mostrará con JavaScript
+        }),
+        label='Código de Administrador'
+    )
+    
     class Meta:
         model = Usuario
         fields = ('first_name', 'last_name', 'email', 'username', 'rol', 'password1', 'password2')
+    
+    def clean(self):
+        cleaned_data = super().clean()
+        rol = cleaned_data.get('rol')
+        admin_code = cleaned_data.get('admin_code', '')
+        
+        if rol and rol.nombre == 'admin':
+            from django.conf import settings
+            codigo_registrado = getattr(settings, 'ADMIN_REGISTRATION_CODE', 'admin2024')
+            
+            if not admin_code:
+                raise forms.ValidationError('Debes ingresar el código de administrador para crear esta cuenta.')
+            if admin_code.strip() != codigo_registrado.strip():
+                raise forms.ValidationError('El código de administrador es incorrecto.')
+        
+        return cleaned_data
     
     def clean_username(self):
         username = self.cleaned_data.get('username')

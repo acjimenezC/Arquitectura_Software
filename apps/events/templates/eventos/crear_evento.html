@@ -1,104 +1,145 @@
 {% extends 'landing.html' %}
 {% load static %}
 
-{% block title %}Crear Evento{% endblock %}
+{% block title %}Crear Evento - TickerFisher{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/crearEvento.css' %}">
 {% endblock %}
 
 {% block content %}
-<style>
-    input:focus, textarea:focus, select:focus {
-        border-color: #ebc01f !important;
-        box-shadow: 0 0 0 0.2rem rgba(235, 192, 31, 0.25) !important;
-    }
-</style>
-<div class="container mt-5" style="margin-bottom: 750px; margin-top: 50px; margin-left: 50px;">
+<div class="evento-container">
     <div class="row justify-content-center">
-        <div class="col-md-7">
-            <div class="card shadow">
-                <div class="card-body p-5">
-                    <h2 class="text-center mb-4" style="margin-bottom: 50px">Crear Nuevo Evento</h2>
-                    
+        <div class="col-lg-6 col-md-8">
+            <div class="evento-card">
+                <!-- Header -->
+                <div class="evento-header">
+                    <h2>Crear Evento</h2>
+                </div>
+
+                <!-- Contenido del formulario -->
+                <div class="evento-body">
                     {% if messages %}
                         {% for message in messages %}
-                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
                                 {{ message }}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                             </div>
                         {% endfor %}
                     {% endif %}
-                    
-                    <form method="post">
+
+                    <form method="post" enctype="multipart/form-data">
                         {% csrf_token %}
-                        
-                        <div class="mb-3">
-                            <label for="{{ form.nombre.id_for_label }}" class="form-label">
-                                Nombre del Evento
-                            </label>
-                            {{ form.nombre }}
-                            {% if form.nombre.errors %}<div class="text-danger">{{ form.nombre.errors }}</div>{% endif %}
+
+                        <!-- Información Básica -->
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label for="{{ form.nombre.id_for_label }}" class="form-label">
+                                    Nombre del Evento
+                                </label>
+                                {{ form.nombre }}
+                                {% if form.nombre.errors %}<div class="text-danger">{{ form.nombre.errors.0 }}</div>{% endif %}
+                            </div>
                         </div>
-                        
-                        <div class="mb-3">
-                            <label for="{{ form.lugar.id_for_label }}" class="form-label">
-                                Lugar
-                            </label>
-                            {{ form.lugar }}
-                            {% if form.lugar.errors %}<div class="text-danger">{{ form.lugar.errors }}</div>{% endif %}
+
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label for="{{ form.lugar.id_for_label }}" class="form-label">
+                                    Lugar / Ubicación
+                                </label>
+                                {{ form.lugar }}
+                                {% if form.lugar.errors %}<div class="text-danger">{{ form.lugar.errors.0 }}</div>{% endif %}
+                            </div>
                         </div>
-                        
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
+
+                        <!-- Detalles de Fecha y Hora -->
+                        <div class="form-row">
+                            <div class="form-group">
                                 <label for="{{ form.fecha.id_for_label }}" class="form-label">
                                     Fecha
                                 </label>
                                 {{ form.fecha }}
-                                {% if form.fecha.errors %}<div class="text-danger">{{ form.fecha.errors }}</div>{% endif %}
+                                {% if form.fecha.errors %}<div class="text-danger">{{ form.fecha.errors.0 }}</div>{% endif %}
                             </div>
-                            
-                            <div class="col-md-6 mb-3">
+
+                            <div class="form-group">
                                 <label for="{{ form.hora.id_for_label }}" class="form-label">
                                     Hora
                                 </label>
                                 {{ form.hora }}
-                                {% if form.hora.errors %}<div class="text-danger">{{ form.hora.errors }}</div>{% endif %}
+                                {% if form.hora.errors %}<div class="text-danger">{{ form.hora.errors.0 }}</div>{% endif %}
                             </div>
                         </div>
-                        
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
+
+                        <!-- Precios y Capacidad -->
+                        <div class="form-row">
+                            <div class="form-group">
                                 <label for="{{ form.precio.id_for_label }}" class="form-label">
                                     Precio por Ticket
                                 </label>
                                 {{ form.precio }}
-                                {% if form.precio.errors %}<div class="text-danger">{{ form.precio.errors }}</div>{% endif %}
+                                {% if form.precio.errors %}<div class="text-danger">{{ form.precio.errors.0 }}</div>{% endif %}
                             </div>
-                            
-                            <div class="col-md-6 mb-3">
+
+                            <div class="form-group">
                                 <label for="{{ form.capacidad.id_for_label }}" class="form-label">
                                     Capacidad Máxima
                                 </label>
                                 {{ form.capacidad }}
-                                {% if form.capacidad.errors %}<div class="text-danger">{{ form.capacidad.errors }}</div>{% endif %}
+                                {% if form.capacidad.errors %}<div class="text-danger">{{ form.capacidad.errors.0 }}</div>{% endif %}
                             </div>
                         </div>
-                        
-                        <div class="mb-3">
-                            <label for="{{ form.descripcion.id_for_label }}" class="form-label">
-                                Descripción (Opcional)
-                            </label>
-                            {{ form.descripcion }}
-                            {% if form.descripcion.errors %}<div class="text-danger">{{ form.descripcion.errors }}</div>{% endif %}
+
+                        <!-- Categoría -->
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label for="{{ form.categoria.id_for_label }}" class="form-label">
+                                    Categoría
+                                </label>
+                                {{ form.categoria }}
+                                {% if form.categoria.errors %}<div class="text-danger">{{ form.categoria.errors.0 }}</div>{% endif %}
+                            </div>
                         </div>
-                        
-                        <button type="submit" class="btn-search" style="color: white; padding: 10px; text-decoration: none; border-radius: 5px; margin-top: 10px">
-                            Crear Evento
-                        </button>
-                        <div style="margin-top: 20px;">
-                            <a href="{% url 'events:mis_eventos' %}" class="btn-search" style="color: white; padding: 10px; text-decoration: none; border-radius: 5px;">
-                                Volver a Mis Eventos
+
+                        <!-- Imagen del Evento -->
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label for="{{ form.imagen.id_for_label }}" class="form-label">
+                                    Imagen del Evento (Opcional)
+                                </label>
+                                <div class="file-input-wrapper">
+                                    {{ form.imagen }}
+                                    <label for="{{ form.imagen.id_for_label }}" class="file-input-label">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                            <polyline points="17 8 12 3 7 8"></polyline>
+                                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                                        </svg>
+                                        <span>Seleccionar imagen</span>
+                                    </label>
+                                </div>
+                                {% if form.imagen.errors %}<div class="text-danger">{{ form.imagen.errors.0 }}</div>{% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Descripción -->
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label for="{{ form.descripcion.id_for_label }}" class="form-label">
+                                    Descripción (Opcional)
+                                </label>
+                                {{ form.descripcion }}
+                                {% if form.descripcion.errors %}<div class="text-danger">{{ form.descripcion.errors.0 }}</div>{% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Botones -->
+                        <div class="button-group">
+                            <button type="submit" class="btn-primary">
+                                Crear Evento
+                            </button>
+                            <a href="{% url 'events:mis_eventos' %}" class="btn-secondary">
+                                Cancelar
                             </a>
                         </div>
                     </form>
@@ -107,4 +148,60 @@
         </div>
     </div>
 </div>
+
+<script>
+    // Mejorar el input de archivo
+    const fileInput = document.querySelector('.form-control-file');
+    const fileLabel = document.querySelector('.file-input-label');
+    const fileWrapper = document.querySelector('.file-input-wrapper');
+    
+    if (fileInput && fileLabel) {
+        fileInput.addEventListener('change', function() {
+            if (this.files && this.files.length > 0) {
+                const fileName = this.files[0].name;
+                fileLabel.innerHTML = `
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <span>${fileName}</span>
+                `;
+                fileWrapper.classList.add('has-file');
+            } else {
+                fileLabel.innerHTML = `
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    <span>Seleccionar imagen</span>
+                `;
+                fileWrapper.classList.remove('has-file');
+            }
+        });
+
+        // Permitir drag and drop
+        fileWrapper.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            fileWrapper.style.borderColor = 'var(--amarillo-principal)';
+            fileWrapper.style.backgroundColor = 'rgba(212, 175, 55, 0.1)';
+        });
+
+        fileWrapper.addEventListener('dragleave', () => {
+            fileWrapper.style.borderColor = '';
+            fileWrapper.style.backgroundColor = '';
+        });
+
+        fileWrapper.addEventListener('drop', (e) => {
+            e.preventDefault();
+            fileWrapper.style.borderColor = '';
+            fileWrapper.style.backgroundColor = '';
+            
+            if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                fileInput.files = e.dataTransfer.files;
+                const event = new Event('change', { bubbles: true });
+                fileInput.dispatchEvent(event);
+            }
+        });
+    }
+</script>
 {% endblock %}

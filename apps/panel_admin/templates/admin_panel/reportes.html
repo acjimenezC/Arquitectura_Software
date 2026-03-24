@@ -1,34 +1,250 @@
 {% extends 'landing.html' %}
 
-{% block title %}Panel Admin - Reportes{% endblock %}
+{% block title %}Panel Administrativo - Reportes{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="/static/css/reportes.css">
+{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-	<h2>Reportes</h2>
-	<div class="card mt-3">
-		<div class="card-body">
-			<p>Generación de reportes disponible aquí. (Plantilla de ejemplo)</p>
-			<div class="row">
-				<div class="col-md-6">
-					<div class="card mb-3">
-						<div class="card-body">
-							<h5 class="card-title">Reporte de ventas</h5>
-								<p style="color: #666666;">Resumen de ventas por periodo.</p>
-							<a class="btn btn-sm btn-primary" href="#">Generar</a>
-						</div>
-					</div>
-				</div>
-				<div class="col-md-6">
-					<div class="card mb-3">
-						<div class="card-body">
-							<h5 class="card-title">Asistencia</h5>
-								<p style="color: #666666;">Exportar lista de asistencia por evento.</p>
-							<a class="btn btn-sm btn-primary" href="#">Exportar</a>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+<div class="reportes-container">
+    <!-- Header -->
+    <div class="reportes-header">
+        <h1>Reportería Administrativa</h1>
+        <p>Genera reportes detallados de reservas, ingresos y estadísticas de eventos</p>
+    </div>
+
+    <!-- Sección de Filtros -->
+    <div class="filtros-container">
+        <h3>Filtros y Opciones</h3>
+        <form id="filtrosForm">
+            <div class="filtros-grid">
+                <div class="filtro-group">
+                    <label for="tipo_reporte">Tipo de Reporte</label>
+                    <select id="tipo_reporte" name="tipo_reporte">
+                        <option value="">Seleccionar reporte...</option>
+                        <option value="reservas">Reporte de Reservas</option>
+                        <option value="ingresos">Reporte de Ingresos</option>
+                        <option value="ocupacion">Reporte de Ocupación</option>
+                        <option value="asistencia">Reporte de Asistencia</option>
+                        <option value="organizadores">Desempeño de Organizadores</option>
+                    </select>
+                </div>
+
+                <div class="filtro-group">
+                    <label for="evento_filtro">Evento (Opcional)</label>
+                    <select id="evento_filtro" name="evento">
+                        <option value="">Todos los eventos</option>
+                        {% for evento in eventos %}
+                            <option value="{{ evento.id }}">{{ evento.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="filtro-group">
+                    <label for="fecha_inicio">Fecha Inicio</label>
+                    <input type="date" id="fecha_inicio" name="fecha_inicio">
+                </div>
+
+                <div class="filtro-group">
+                    <label for="fecha_fin">Fecha Fin</label>
+                    <input type="date" id="fecha_fin" name="fecha_fin">
+                </div>
+
+                <div class="filtro-group">
+                    <label for="categoria_filtro">Categoría (Opcional)</label>
+                    <select id="categoria_filtro" name="categoria">
+                        <option value="">Todas las categorías</option>
+                        <option value="conciertos">Conciertos</option>
+                        <option value="deportes">Deportes</option>
+                        <option value="teatro">Teatro</option>
+                        <option value="conferencias">Conferencias</option>
+                        <option value="otros">Otros</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="filtros-actions">
+                <button type="submit" class="btn-generar">Generar Reporte</button>
+                <button type="button" class="btn-descargar" onclick="descargarReporte()">Descargar CSV</button>
+                <button type="reset" class="btn-limpiar">Limpiar Filtros</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Estadísticas Rápidas -->
+    {% if mostrar_estadisticas %}
+    <div class="stats-section">
+        <div class="stat-card">
+            <div class="stat-label">Total de Reservas</div>
+            <p class="stat-value">{{ total_reservas }}</p>
+            <div class="stat-trend trend-up">↑ {{ reservas_recientes }}% últimos 30 días</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-label">Ingresos Totales</div>
+            <p class="stat-value">${{ ingresos_totales }}</p>
+            <div class="stat-trend trend-up">↑ {{ ingresos_recientes }}% últimos 30 días</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-label">Ocupación Promedio</div>
+            <p class="stat-value">{{ ocupacion_promedio }}%</p>
+            <div class="stat-trend">En {{ eventos_activos }} eventos activos</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-label">Usuarios Registrados</div>
+            <p class="stat-value">{{ usuarios_totales }}</p>
+            <div class="stat-trend">{{ usuarios_activos }} activos este mes</div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Tarjetas de Reportes Disponibles -->
+    <div class="reportes-grid">
+        <!-- Reporte de Reservas -->
+        <div class="reporte-card">
+            <span class="reporte-icon">📋</span>
+            <h3>Reporte de Reservas</h3>
+            <p>Análisis detallado de todas las reservas realizadas. Incluye información de clientes, eventos y fechas de reserva.</p>
+            <div class="reporte-actions">
+                <button class="reporte-btn" onclick="generarReporte('reservas')">Ver Reporte</button>
+            </div>
+        </div>
+
+        <!-- Reporte de Ingresos -->
+        <div class="reporte-card">
+            <span class="reporte-icon">💰</span>
+            <h3>Reporte de Ingresos</h3>
+            <p>Análisis financiero de ingresos por evento, categoría y período. Ingresos por ventas de tickets.</p>
+            <div class="reporte-actions">
+                <button class="reporte-btn" onclick="generarReporte('ingresos')">Ver Reporte</button>
+            </div>
+        </div>
+
+        <!-- Reporte de Ocupación -->
+        <div class="reporte-card">
+            <span class="reporte-icon">🎭</span>
+            <h3>Reporte de Ocupación</h3>
+            <p>Análisis de capacidad y ocupación de eventos. Identifica eventos con mayor y menor ocupación.</p>
+            <div class="reporte-actions">
+                <button class="reporte-btn" onclick="generarReporte('ocupacion')">Ver Reporte</button>
+            </div>
+        </div>
+
+        <!-- Reporte de Asistencia -->
+        <div class="reporte-card">
+            <span class="reporte-icon">✓</span>
+            <h3>Reporte de Asistencia</h3>
+            <p>Seguimiento de asistencia a eventos. Tasa de no-show y análisis de participación.</p>
+            <div class="reporte-actions">
+                <button class="reporte-btn" onclick="generarReporte('asistencia')">Ver Reporte</button>
+            </div>
+        </div>
+
+        <!-- Desempeño de Organizadores -->
+        <div class="reporte-card">
+            <span class="reporte-icon">👤</span>
+            <h3>Desempeño de Organizadores</h3>
+            <p>Análisis de rendimiento de organizadores. Incluye eventos creados, ingresos generados y calificación.</p>
+            <div class="reporte-actions">
+                <button class="reporte-btn" onclick="generarReporte('organizadores')">Ver Reporte</button>
+            </div>
+        </div>
+
+        <!-- Análisis Comparativo -->
+        <div class="reporte-card">
+            <span class="reporte-icon">📊</span>
+            <h3>Análisis Comparativo</h3>
+            <p>Comparación de métricas entre períodos. Identifica tendencias y cambios en el rendimiento.</p>
+            <div class="reporte-actions">
+                <button class="reporte-btn" onclick="generarReporte('comparativo')">Ver Reporte</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla de Datos (mostrar cuando se genera un reporte) -->
+    {% if reporte_activo %}
+    <div class="tabla-reporte">
+        <h3>{{ titulo_reporte }}</h3>
+        
+        {% if datos_reporte %}
+        <div class="tabla-scroll">
+            <table>
+                <thead>
+                    <tr>
+                        {% for columna in columnas_reporte %}
+                        <th>{{ columna }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for fila in datos_reporte %}
+                    <tr>
+                        {% for valor in fila %}
+                        <td>{{ valor }}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div style="margin-top: 20px;">
+            <button class="btn-descargar" onclick="descargarReporte()">Descargar este Reporte</button>
+        </div>
+        {% else %}
+        <div class="sin-datos">
+            <h3>Sin datos disponibles</h3>
+            <p>No se encontraron datos para los filtros seleccionados. Intenta con otros parámetros.</p>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
 </div>
+
+<script>
+    function generarReporte(tipo) {
+        const tipoSelect = document.getElementById('tipo_reporte');
+        tipoSelect.value = tipo;
+        
+        document.getElementById('filtrosForm').submit();
+    }
+
+    function descargarReporte() {
+        const tipoReporte = document.getElementById('tipo_reporte').value;
+        const evento = document.getElementById('evento_filtro').value;
+        const fechaInicio = document.getElementById('fecha_inicio').value;
+        const fechaFin = document.getElementById('fecha_fin').value;
+        const categoria = document.getElementById('categoria_filtro').value;
+
+        if (!tipoReporte) {
+            alert('Selecciona un tipo de reporte');
+            return;
+        }
+
+        const params = new URLSearchParams({
+            tipo: tipoReporte,
+            evento: evento || '',
+            fecha_inicio: fechaInicio || '',
+            fecha_fin: fechaFin || '',
+            categoria: categoria || '',
+            descargar: 'csv'
+        });
+
+        window.location.href = `/admin/panel/reportes/?${params.toString()}`;
+    }
+
+    // Auto-llenar fecha de hoy como referencia
+    document.addEventListener('DOMContentLoaded', function() {
+        const hoy = new Date();
+        const hace30Dias = new Date(hoy.getTime() - (30 * 24 * 60 * 60 * 1000));
+        
+        document.getElementById('fecha_inicio').valueAsDate = hace30Dias;
+        document.getElementById('fecha_fin').valueAsDate = hoy;
+    });
+</script>
+
 {% endblock %}

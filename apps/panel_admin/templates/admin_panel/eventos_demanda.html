@@ -1,0 +1,210 @@
+{% extends 'landing.html' %}
+{% load static %}
+
+{% block title %}Panel Admin - Análisis de Demanda{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/dashboard_admin.css' %}">
+<link rel="stylesheet" href="{% static 'css/eventos_demanda.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="demanda-container">
+    <!-- Header -->
+    <div class="demanda-header">
+        <h1>Análisis de Demanda</h1>
+        <p>Eventos más reservados y análisis de ocupación</p>
+    </div>
+
+    <!-- Estadísticas Globales -->
+    <div class="global-stats">
+        <div class="global-stat-card">
+            <h3>{{ total_tickets_vendidos }}</h3>
+            <p>Tickets Vendidos</p>
+        </div>
+        <div class="global-stat-card">
+            <h3>${{ total_ingresos|floatformat:2 }}</h3>
+            <p>Ingresos Totales</p>
+        </div>
+        <div class="global-stat-card">
+            <h3>{{ ocupacion_global|floatformat:1 }}%</h3>
+            <p>Ocupación Global</p>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="filtros-section">
+        <form method="GET" style="display: flex; gap: 15px; flex-wrap: wrap; align-items: center; width: 100%;">
+            <div class="filtro-group">
+                <label>Categoría:</label>
+                <select name="categoria">
+                    <option value="">Todas las categorías</option>
+                    {% for code, name in categorias %}
+                        <option value="{{ code }}" {% if filtro_categoria == code %}selected{% endif %}>{{ name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="filtro-group">
+                <label>Búsqueda:</label>
+                <input type="text" name="busqueda" placeholder="Nombre evento, lugar, organizador..." value="{{ busqueda }}">
+            </div>
+
+            <button type="submit" class="btn-filtrar">Filtrar</button>
+            {% if filtro_categoria or busqueda %}
+                <a href="{% url 'panel_admin:eventos_demanda' %}" class="btn-limpiar">Limpiar Filtros</a>
+            {% endif %}
+        </form>
+    </div>
+
+    <!-- Top 5 Eventos Más Reservados -->
+    {% if top_5_eventos %}
+    <div class="top5-section">
+        <h2> Top 5 Eventos Más Reservados</h2>
+        <div class="top5-cards">
+            {% for evento in top_5_eventos %}
+            <div class="top5-card">
+                <span class="top5-posicion">#{{ forloop.counter }}</span>
+                <h3>{{ evento.nombre }}</h3>
+                <p style="color: #666; font-size: 0.9rem; margin: 5px 0;">
+                    {{ evento.categoria }} • Organizador: {{ evento.organizador.get_full_name|default:evento.organizador.username }}
+                </p>
+                <div class="top5-stats">
+                    <div class="top5-stat-item">
+                        <div class="top5-stat-label">Tickets Vendidos</div>
+                        <div class="top5-stat-value">{{ evento.total_tickets }}</div>
+                    </div>
+                    <div class="top5-stat-item">
+                        <div class="top5-stat-label">Ocupación</div>
+                        <div class="top5-stat-value">{{ evento.ocupacion_porcentaje|floatformat:1 }}%</div>
+                    </div>
+                    <div class="top5-stat-item">
+                        <div class="top5-stat-label">Disponibles</div>
+                        <div class="top5-stat-value">{{ evento.disponibles }}</div>
+                    </div>
+                    <div class="top5-stat-item">
+                        <div class="top5-stat-label">Ingresos</div>
+                        <div class="top5-stat-value" style="font-size: 0.95rem;">${{ evento.ingresos_totales|floatformat:2 }}</div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Tabla de Todos los Eventos -->
+    <div class="tabla-section">
+        <h2> Todos los Eventos</h2>
+        
+        {% if eventos %}
+        <div class="tabla-contenedor">
+            <div class="tabla-scroll">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Evento</th>
+                            <th>Categoría</th>
+                            <th>Ubicación</th>
+                            <th>Organizador</th>
+                            <th>Tickets Vendidos</th>
+                            <th>Capacidad</th>
+                            <th>Ocupación</th>
+                            <th>Ingresos</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for evento in eventos %}
+                        <tr>
+                            <td class="td-nombre">{{ evento.nombre }}</td>
+                            <td>
+                                <span class="td-categoria categoria-{{ evento.categoria|lower }}">{{ evento.categoria }}</span>
+                            </td>
+                            <td>{{ evento.lugar }}</td>
+                            <td>{{ evento.organizador.get_full_name|default:evento.organizador.username }}</td>
+                            <td><strong>{{ evento.total_tickets }}</strong></td>
+                            <td>{{ evento.capacidad }}</td>
+                            <td>
+                                <div class="ocupacion-bar">
+                                    <div class="ocupacion-fill 
+                                        {% if evento.ocupacion_porcentaje >= 75 %}ocupacion-alto
+                                        {% elif evento.ocupacion_porcentaje >= 40 %}ocupacion-medio
+                                        {% else %}ocupacion-bajo{% endif %}"
+                                        style="width: {% if evento.ocupacion_porcentaje > 100 %}100{% else %}{{ evento.ocupacion_porcentaje|floatformat:0 }}{% endif %}%">
+                                    </div>
+                                </div>
+                                <span class="ocupacion-text">
+                                    {{ evento.ocupacion_porcentaje|floatformat:1 }}%
+                                </span>
+                            </td>
+                            <td><span class="precio-total">${{ evento.ingresos_totales|floatformat:2 }}</span></td>
+                            <td>
+                                {% if evento.activo %}
+                                    <span style="color: #28a745; font-weight: 600;">✓ Activo</span>
+                                {% else %}
+                                    <span style="color: #dc3545; font-weight: 600;">✗ Inactivo</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% else %}
+        <div class="tabla-contenedor">
+            <div class="sin-datos">
+                <h3>No hay eventos que coincidan con los filtros</h3>
+                <p>Intenta cambiar los criterios de búsqueda</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Estadísticas por Categoría -->
+    {% if stats_por_categoria %}
+    <div class="categoria-section">
+        <h2> Estadísticas por Categoría</h2>
+        <div class="categoria-grid">
+            {% for cat_stat in stats_por_categoria %}
+            <div class="categoria-card" style="border-left-color: 
+                {% if cat_stat.categoria == 'Empresariales' %}#3498db
+                {% elif cat_stat.categoria == 'Conciertos' %}#9b59b6
+                {% elif cat_stat.categoria == 'Deportes' %}#2ecc71
+                {% else %}#e67e22{% endif %}">
+                <h3>{{ cat_stat.categoria }}</h3>
+                <div class="categoria-stat">
+                    <span class="categoria-stat-label">Eventos Activos</span>
+                    <span class="categoria-stat-value">{{ cat_stat.total_eventos }}</span>
+                </div>
+                <div class="categoria-stat">
+                    <span class="categoria-stat-label">Tickets Vendidos</span>
+                    <span class="categoria-stat-value">{{ cat_stat.total_tickets }}</span>
+                </div>
+                <div class="categoria-stat">
+                    <span class="categoria-stat-label">Ingresos Totales</span>
+                    <span class="categoria-stat-value">${{ cat_stat.ingresos|floatformat:2 }}</span>
+                </div>
+                <div class="categoria-stat">
+                    <span class="categoria-stat-label">Ocupación Promedio</span>
+                    <span class="categoria-stat-value">{{ cat_stat.promedio_ocupacion|floatformat:1 }}%</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+    // Formatear números como moneda
+    document.querySelectorAll('.precio-total').forEach(el => {
+        const valor = parseFloat(el.textContent);
+        if (!isNaN(valor)) {
+            el.textContent = '$' + valor.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+    });
+</script>
+{% endblock %}

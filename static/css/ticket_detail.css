@@ -1,0 +1,445 @@
+/* ============================================
+   TICKET DETAIL - CSS STYLES
+   ============================================ */
+
+/* Container Principal */
+.ticket-detail-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Header */
+.detail-header {
+    margin-bottom: 30px;
+}
+
+.header-back {
+    margin-bottom: 15px;
+}
+
+.back-link {
+    color: #D4AF37;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+.detail-header h1 {
+    margin: 0;
+    color: #111;
+}
+
+/* Detail Content */
+.detail-content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Info Grid */
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.info-card {
+    background: white;
+    border: 1px solid #e0e0e0;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.info-card h3 {
+    margin: 0 0 15px 0;
+    color: #666;
+    font-size: 12px;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.info-card p {
+    margin: 5px 0 0 0;
+    color: #666;
+    font-size: 13px;
+}
+
+/* Code Display */
+.code-display {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.code-display code {
+    background: #f5f5f5;
+    padding: 10px;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    flex: 1;
+    word-break: break-all;
+}
+
+.btn-copy {
+    padding: 8px 12px;
+    background: #D4AF37;
+    color: black;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.btn-copy:hover {
+    background: #B8860B;
+}
+
+/* Links */
+.user-link,
+.event-link {
+    color: #0066cc;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.user-link:hover,
+.event-link:hover {
+    text-decoration: underline;
+}
+
+.event-date {
+    font-size: 12px;
+    color: #999;
+}
+
+.big-value {
+    font-size: 28px;
+    font-weight: bold;
+    color: #D4AF37;
+}
+
+/* Detail Row */
+.detail-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+/* Info Section */
+.info-section {
+    background: white;
+    border: 1px solid #e0e0e0;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.info-section h3 {
+    margin: 0 0 15px 0;
+    color: #111;
+    font-size: 16px;
+}
+
+.info-section.full-width {
+    grid-column: 1 / -1;
+}
+
+/* Info Table */
+.info-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.info-table tr {
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.info-table tr:last-child {
+    border-bottom: none;
+}
+
+.info-table td {
+    padding: 8px 0;
+}
+
+.info-table td:first-child {
+    color: #666;
+    font-size: 13px;
+    width: 150px;
+}
+
+.info-table td:last-child {
+    text-align: right;
+}
+
+/* Status Badges */
+.status-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.status-active {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-cancelled {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.status-validated {
+    background: #d4edda;
+    color: #28a745;
+}
+
+.status-pending {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.pending {
+    color: #999;
+    font-style: italic;
+}
+
+/* Notes Section */
+.notes-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.notes-textarea {
+    padding: 10px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    font-family: Arial, sans-serif;
+    resize: vertical;
+    min-height: 100px;
+}
+
+/* QR Section */
+.qr-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    padding: 30px;
+    background: #f9f9f9;
+    border-radius: 8px;
+}
+
+.qr-image {
+    max-width: 300px;
+    width: 100%;
+    border: 1px solid #e0e0e0;
+    padding: 10px;
+    background: white;
+}
+
+.qr-code {
+    font-family: 'Courier New', monospace;
+    color: #666;
+    font-size: 12px;
+    margin: 0;
+}
+
+/* Actions Section */
+.actions-section {
+    grid-column: 1 / -1;
+}
+
+.actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 15px;
+}
+
+.action-form {
+    display: flex;
+}
+
+.action-btn {
+    width: 100%;
+    padding: 15px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+    background-color: white;
+    margin: 15% auto;
+    padding: 30px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.close-modal {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close-modal:hover {
+    color: #000;
+}
+
+.modal h2 {
+    margin: 0 0 10px 0;
+}
+
+/* Form Group */
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #333;
+    font-weight: 500;
+}
+
+.form-group textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+/* Buttons */
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.btn-primary {
+    background: #D4AF37;
+    color: black;
+}
+
+.btn-primary:hover {
+    background: #B8860B;
+}
+
+.btn-success {
+    background: #28a745;
+    color: white;
+}
+
+.btn-danger {
+    background: #dc3545;
+    color: white;
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+}
+
+.btn-warning {
+    background: #f39c12;
+    color: white;
+}
+
+.btn-info {
+    background: #17a2b8;
+    color: white;
+}
+
+/* Utility Classes */
+.text-center {
+    text-align: center;
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+@media (max-width: 768px) {
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .detail-row {
+        grid-template-columns: 1fr;
+    }
+
+    .actions-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .code-display {
+        flex-direction: column;
+    }
+
+    .info-table td:last-child {
+        text-align: left;
+    }
+
+    .ticket-detail-container {
+        padding: 10px;
+    }
+
+    .modal-content {
+        margin: 30% auto;
+        width: 95%;
+    }
+}
+
+@media (max-width: 480px) {
+    .detail-header h1 {
+        font-size: 20px;
+    }
+
+    .info-card h3 {
+        font-size: 11px;
+    }
+
+    .big-value {
+        font-size: 24px;
+    }
+
+    .btn {
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+
+    .action-btn {
+        padding: 10px;
+    }
+}

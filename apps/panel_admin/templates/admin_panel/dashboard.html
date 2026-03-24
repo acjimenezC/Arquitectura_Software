@@ -1,51 +1,150 @@
 {% extends 'landing.html' %}
+{% load static %}
 
 {% block title %}Panel Admin - Dashboard{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/dashboard_admin.css' %}">
+{% endblock %}
+
 {% block content %}
-<div class="container mt-4">
-	<div class="d-flex justify-content-between align-items-center mb-4">
-		<h2>Panel de Administración</h2>
-	</div>
 
-	<div class="row g-3">
-		<div class="col-md-3">
-			<div class="card text-center shadow-sm">
-				<div class="card-body">
-					<h5 class="card-title">Usuarios</h5>
-					<p class="display-6 mb-0">{{ estadisticas.total_usuarios|default:0 }}</p>
-				</div>
-			</div>
+<div class="admin-dashboard">
+	<!-- Header -->
+	<div class="dashboard-header">
+		<div class="header-content">
+			<h1>Panel de Administración</h1>
+			<p class="header-subtitle">Bienvenido, {{ request.user.get_full_name|default:request.user.username }}</p>
 		</div>
-		<div class="col-md-3">
-			<div class="card text-center shadow-sm">
-				<div class="card-body">
-					<h5 class="card-title">Roles</h5>
-					<p class="display-6 mb-0">{{ estadisticas.total_roles|default:0 }}</p>
-				</div>
-			</div>
-		</div>
-		<div class="col-md-3">
-			<div class="card text-center shadow-sm">
-				<div class="card-body">
-					<h5 class="card-title">Activos</h5>
-					<p class="display-6 mb-0">{{ estadisticas.usuarios_activos|default:0 }}</p>
-				</div>
-			</div>
-		</div>
-		<div class="col-md-3">
-			<div class="card text-center shadow-sm">
-				<div class="card-body">
-					<h5 class="card-title">Inactivos</h5>
-					<p class="display-6 mb-0">{{ estadisticas.usuarios_inactivos|default:0 }}</p>
-				</div>
-			</div>
+		<div class="header-date">
+			<span id="current-date"></span>
 		</div>
 	</div>
 
-	<div class="mt-4">
-		<a href="{% url 'panel_admin:usuarios' %}" class="btn btn-outline-primary me-2">Gestionar Usuarios</a>
-		<a href="{% url 'panel_admin:reportes' %}" class="btn btn-outline-secondary">Ver Reportes</a>
+	<!-- Stats Cards -->
+	<div class="stats-grid">
+		<div class="stat-card stat-usuarios">
+			<div class="stat-icon"></div>
+			<div class="stat-content">
+				<h3>{{ total_usuarios }}</h3>
+				<p>Usuarios Totales</p>
+			</div>
+		</div>
+
+		<div class="stat-card stat-activos">
+			<div class="stat-icon">✓</div>
+			<div class="stat-content">
+				<h3>{{ usuarios_activos }}</h3>
+				<p>Usuarios Activos</p>
+			</div>
+		</div>
+
+		<div class="stat-card stat-eventos">
+			<div class="stat-icon"></div>
+			<div class="stat-content">
+				<h3>{{ total_eventos }}</h3>
+				<p>Eventos Totales</p>
+			</div>
+		</div>
+
+		<div class="stat-card stat-verificados">
+			<div class="stat-icon"></div>
+			<div class="stat-content">
+				<h3>{{ usuarios_verificados }}</h3>
+				<p>Usuarios Verificados</p>
+			</div>
+		</div>
+	</div>
+
+	<!-- Main Actions -->
+	<div class="actions-section">
+		<h2>Acciones Principales</h2>
+		<div class="actions-grid">
+			<!-- Botón Usuarios Activos -->
+			<a href="{% url 'panel_admin:usuarios' %}?estado=activo" class="action-card action-usuarios">
+				<div class="action-icon"></div>
+				<h3>Usuarios Activos</h3>
+				<p>Ver y gestionar usuarios activos del sistema</p>
+				<span class="action-arrow">→</span>
+			</a>
+
+			<!-- Botón Reportes -->
+			<a href="{% url 'panel_admin:reportes' %}" class="action-card action-reportes">
+				<div class="action-icon"></div>
+				<h3>Reportes</h3>
+				<p>Análisis y estadísticas del sistema</p>
+				<span class="action-arrow">→</span>
+			</a>
+
+			<!-- Botón Demanda y Eventos Populares (NUEVO) -->
+			<a href="{% url 'panel_admin:eventos_demanda' %}" class="action-card action-eventos">
+				<div class="action-icon"></div>
+				<h3>Análisis de Demanda</h3>
+				<p>Eventos más reservados y ocupación</p>
+				<span class="action-arrow">→</span>
+			</a>
+
+			<!-- Botón Todos los Usuarios -->
+			<a href="{% url 'panel_admin:usuarios' %}" class="action-card action-todos">
+				<div class="action-icon"></div>
+				<h3>Todos los Usuarios</h3>
+				<p>Gestionar todos los usuarios del sistema</p>
+				<span class="action-arrow">→</span>
+			</a>
+		</div>
+	</div>
+
+	<!-- Usuarios por Rol -->
+	<div class="info-section">
+		<div class="info-card">
+			<h2>Distribución de Usuarios por Rol</h2>
+			<div class="rol-distribution">
+				{% for rol in usuarios_por_rol %}
+					<div class="rol-item">
+						<span class="rol-name">{{ rol.rol__nombre|upper }}</span>
+						<div class="rol-bar">
+							<div class="rol-fill" style="width: {% widthratio rol.cantidad total_usuarios 100 %}%"></div>
+						</div>
+						<span class="rol-count">{{ rol.cantidad }}</span>
+					</div>
+				{% empty %}
+					<p style="text-align: center; color: #999;">Sin datos disponibles</p>
+				{% endfor %}
+			</div>
+		</div>
+
+		<!-- Eventos Recientes -->
+		<div class="info-card">
+			<h2>Eventos Recientes</h2>
+			<div class="eventos-list">
+				{% if eventos_recientes %}
+					{% for evento in eventos_recientes %}
+						<div class="evento-item">
+							<div class="evento-header">
+								<h4>{{ evento.nombre }}</h4>
+								<span class="evento-estado {% if evento.activo %}activo{% else %}inactivo{% endif %}">
+									{% if evento.activo %}Activo{% else %}Inactivo{% endif %}
+								</span>
+							</div>
+							<p class="evento-organizer">por {{ evento.organizador.get_full_name|default:evento.organizador.username }}</p>
+							<p class="evento-fecha">{{ evento.fecha_creacion|date:"d/m/Y" }}</p>
+						</div>
+					{% endfor %}
+				{% else %}
+					<p style="text-align: center; color: #999;">Sin eventos registrados</p>
+				{% endif %}
+			</div>
+		</div>
 	</div>
 </div>
+
+<script>
+	// Mostrar fecha actual
+	document.getElementById('current-date').textContent = new Date().toLocaleDateString('es-ES', {
+		weekday: 'long',
+		year: 'numeric',
+		month: 'long',
+		day: 'numeric'
+	});
+</script>
 {% endblock %}

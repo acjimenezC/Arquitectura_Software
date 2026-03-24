@@ -1,0 +1,198 @@
+{% extends 'landing.html' %}
+{% load static %}
+
+{% block title %}Panel de Estadísticas - TICKERFISHER{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/dashboard_org.css' %}">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- HEADER -->
+    <div class="dashboard-header">
+        <div class="header-content">
+            <h1>Panel de Estadísticas</h1>
+            <p>Resumen de tus eventos y ventas</p>
+        </div>
+
+        <!-- FILTROS -->
+        <div class="filters-section">
+            <form method="GET" class="filters-form">
+                <div class="filter-group">
+                    <label for="evento">Evento:</label>
+                    <select id="evento" name="evento" class="filter-select">
+                        <option value="">Todos los eventos</option>
+                        {% for evento in eventos %}
+                            <option value="{{ evento.id }}" {% if evento_seleccionado.id == evento.id %}selected{% endif %}>
+                                {{ evento.nombre }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="fecha_inicio">Desde:</label>
+                    <input type="date" id="fecha_inicio" name="fecha_inicio" value="{{ fecha_inicio }}" class="filter-input">
+                </div>
+
+                <div class="filter-group">
+                    <label for="fecha_fin">Hasta:</label>
+                    <input type="date" id="fecha_fin" name="fecha_fin" value="{{ fecha_fin }}" class="filter-input">
+                </div>
+
+                <button type="submit" class="btn-filter">
+                    Filtrar
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- TARJETAS DE RESUMEN -->
+    <section class="summary-cards">
+        <!-- Tickets Totales -->
+        <div class="card card-primary">
+            <div class="card-icon">T</div>
+            <div class="card-content">
+                <h3>Tickets Vendidos</h3>
+                <p class="card-number">{{ tickets_activos }}</p>
+                <span class="card-detail">de {{ tickets_totales }} totales</span>
+            </div>
+            <div class="card-trend {% if crecimiento_porcentaje >= 0 %}trend-up{% else %}trend-down{% endif %}">
+                <span>{{ crecimiento_porcentaje|floatformat:1 }}%</span>
+            </div>
+        </div>
+
+        <!-- Ingresos -->
+        <div class="card card-success">
+            <div class="card-icon">$</div>
+            <div class="card-content">
+                <h3>Ingresos Generados</h3>
+                <p class="card-number">${{ ingresos_totales|floatformat:2 }}</p>
+                <span class="card-detail">Ésta semana</span>
+            </div>
+            <div class="card-trend trend-up">
+                <span>12.5%</span>
+            </div>
+        </div>
+
+        <!-- Tickets Cancelados -->
+        <div class="card card-warning">
+            <div class="card-icon">X</div>
+            <div class="card-content">
+                <h3>Cancelaciones</h3>
+                <p class="card-number">{{ tickets_cancelados }}</p>
+                <span class="card-detail">{{ tickets_cancelados }} cancelados</span>
+            </div>
+            <div class="card-trend trend-down">
+                <span>2.3%</span>
+            </div>
+        </div>
+
+        <!-- Ocupación -->
+        <div class="card card-info">
+            <div class="card-icon">%</div>
+            <div class="card-content">
+                <h3>Ocupación Promedio</h3>
+                <p class="card-number">{{ ocupacion_promedio }}%</p>
+                <span class="card-detail">de capacidad total</span>
+            </div>
+            <div class="card-trend trend-up">
+                <span>5.2%</span>
+            </div>
+        </div>
+
+        <!-- Asistentes Únicos -->
+        <div class="card card-accent">
+            <div class="card-icon">U</div>
+            <div class="card-content">
+                <h3>Asistentes Únicos</h3>
+                <p class="card-number">{{ asistentes_unicos }}</p>
+                <span class="card-detail">personas diferentes</span>
+            </div>
+            <div class="card-trend trend-up">
+                <span>8.1%</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- INSIGHT TOP EVENTO -->
+    {% if evento_top %}
+    <div class="insight-section">
+        <div class="insight-card">
+            <h3>Evento Más Vendido</h3>
+            <p class="insight-title">{{ evento_top.evento.nombre }}</p>
+            <div class="insight-stats">
+                <div class="stat">
+                    <span class="stat-label">Vendidos</span>
+                    <span class="stat-value">{{ evento_top.tickets_vendidos }}</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Ingresos</span>
+                    <span class="stat-value">${{ evento_top.ingresos|floatformat:2 }}</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Ocupación</span>
+                    <span class="stat-value">{{ evento_top.ocupacion }}%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- TABLA DETALLADA -->
+    <section class="table-section">
+        <div class="table-header">
+            <h3>Detalle de Eventos</h3>
+        </div>
+
+        {% if eventos_stats %}
+        <div class="table-container">
+            <table class="dashboard-table">
+                <thead>
+                    <tr>
+                        <th>Evento</th>
+                        <th class="text-center">Vendidos</th>
+                        <th class="text-center">Cancelados</th>
+                        <th class="text-right">Ingresos</th>
+                        <th class="text-center">Ocupación</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for evento_stat in eventos_stats %}
+                    <tr class="table-row">
+                        <td>
+                            <div class="evento-info">
+                                <p class="evento-name">{{ evento_stat.evento.nombre }}</p>
+                                <span class="evento-date">{{ evento_stat.evento.fecha|date:"d/m/Y" }}</span>
+                            </div>
+                        </td>
+                        <td class="text-center">
+                            <span class="badge badge-success">{{ evento_stat.tickets_vendidos }}</span>
+                        </td>
+                        <td class="text-center">
+                            <span class="badge badge-warning">{{ evento_stat.tickets_cancelados }}</span>
+                        </td>
+                        <td class="text-right">
+                            <span class="amount">${{ evento_stat.ingresos|floatformat:2 }}</span>
+                        </td>
+                        <td class="text-center">
+                            <div class="ocupacion-bar">
+                                <div class="ocupacion-fill" style="width: {{ evento_stat.ocupacion }}%"></div>
+                                <span class="ocupacion-text">{{ evento_stat.ocupacion }}%</span>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <p>No hay eventos registrados</p>
+        </div>
+        {% endif %}
+    </section>
+</div>
+{% endblock %}

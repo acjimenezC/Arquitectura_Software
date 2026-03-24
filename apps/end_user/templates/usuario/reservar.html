@@ -1,30 +1,222 @@
 {% extends 'landing.html' %}
+{% load static %}
 
-{% block title %}Reservar - {{ evento.nombre }}{% endblock %}
+{% block title %}Reservar - {{ evento.nombre }} — TICKERFISHER{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/reservar.css' %}">
+{% endblock %}
 
 {% block content %}
-<div class="container mt-4" style="margin-bottom: 1000px; text-align: center;">
-	<h2 style="margin-top: 20px;">Reservar Ticket</h2>
-	<div class="card mt-3" style="max-width: 600px; margin: 50px auto;">
-		<div class="card-body">
-			<h5 class="card-title">{{ evento.nombre }}</h5>
-			<p class="card-text">{{ evento.descripcion }}</p>
-			<p><strong>Lugar:</strong> {{ evento.lugar }}</p>
-			<p><strong>Fecha:</strong> {{ evento.fecha }} a las {{ evento.hora }}</p>
-			<p><strong>Tickets disponibles:</strong> {{ disponibles }}</p>
-			{% if disponibles > 0 %}
-				<form method="post">
-					{% csrf_token %}
-					<div class="mb-3">
-						<label class="form-label">Número de entradas</label>
-						<input class="form-control" type="number" name="cantidad" min="1" max="{{ disponibles }}" value="1">
-					</div>
-					<button type="submit" class="btn btn-primary">Reservar</button>
-				</form>
-			{% else %}
-				<p class="text-danger">No hay tickets disponibles para este evento.</p>
-			{% endif %}
-		</div>
-	</div>
-</div>
+
+    <!-- BREADCRUMB -->
+    <section class="breadcrumb-section">
+        <div class="breadcrumb-container">
+            <a href="{% url 'end_user:eventos' %}">Eventos</a>
+            <span>/</span>
+            <a href="{% url 'events:detail' evento.pk %}">{{ evento.nombre }}</a>
+            <span>/</span>
+            <span>Reservar Entrada</span>
+        </div>
+    </section>
+
+    <!-- MESSAGES -->
+    {% if messages %}
+    <section class="messages-section">
+        <div class="messages-container">
+            {% for message in messages %}
+            <div class="message message-{{ message.tags }}" role="alert">
+                <div class="message-content">
+                    {{ message }}
+                </div>
+                <button type="button" class="message-close" onclick="this.parentElement.style.display='none';">&times;</button>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- MAIN CONTENT -->
+    <section class="reserva-container">
+        <div class="reserva-inner">
+
+            <!-- LEFT COLUMN: Event Summary -->
+            <div class="reserva-evento-info">
+                <div class="evento-resumen">
+                    {% if evento.imagen %}
+                        <img src="{{ evento.imagen.url }}" alt="{{ evento.nombre }}" class="evento-resumen-img">
+                    {% else %}
+                        <div class="evento-resumen-placeholder"></div>
+                    {% endif %}
+
+                    <div class="evento-resumen-content">
+                        <h2>{{ evento.nombre }}</h2>
+                        <p class="categoria-badge">{{ evento.get_categoria_display }}</p>
+
+                        <div class="info-item">
+                            <strong>Fecha</strong>
+                            <p>{{ evento.fecha|date:"d \d\e F \d\e Y" }}</p>
+                        </div>
+
+                        <div class="info-item">
+                            <strong>Hora</strong>
+                            <p>{{ evento.hora|time:"H:i" }}</p>
+                        </div>
+
+                        <div class="info-item">
+                            <strong>Lugar</strong>
+                            <p>{{ evento.lugar }}</p>
+                        </div>
+
+                        <div class="info-item">
+                            <strong>Precio por entrada</strong>
+                            <p class="precio-unit">${{ evento.precio }}</p>
+                        </div>
+
+                        {% if disponibles > 0 %}
+                        <div class="info-item">
+                            <strong>Disponibilidad</strong>
+                            <p>{{ disponibles }} de {{ evento.capacidad }} lugares disponibles</p>
+                        </div>
+                        {% else %}
+                        <div class="info-item unavailable">
+                            <strong>No disponible</strong>
+                            <p>Este evento se encuentra agotado</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT COLUMN: Reservation Form -->
+            <div class="reserva-form-container">
+                <div class="reserva-card">
+                    <h3>Completa tu reserva</h3>
+
+                    {% if disponibles > 0 %}
+                        <form method="post" id="formularioReserva">
+                            {% csrf_token %}
+
+                            <!-- Cantidad de entradas -->
+                            <div class="form-group">
+                                <label for="cantidad">Número de entradas</label>
+                                <div class="cantidad-control">
+                                    <button type="button" class="btn-qty" id="decrementBtn" onclick="decrementCantidad()">−</button>
+                                    <input 
+                                        type="number" 
+                                        id="cantidad" 
+                                        name="cantidad" 
+                                        min="1" 
+                                        max="{{ disponibles }}" 
+                                        value="1"
+                                        onchange="actualizarTotal()"
+                                        oninput="actualizarTotal()">
+                                    <button type="button" class="btn-qty" id="incrementBtn" onclick="incrementCantidad()">+</button>
+                                </div>
+                                <p class="help-text">Máximo {{ disponibles }} entradas disponibles</p>
+                            </div>
+
+                            <!-- Resumen de precio -->
+                            <div class="resumen-precio">
+                                <div class="precio-row">
+                                    <span>Precio unitario:</span>
+                                    <span>${{ evento.precio }}</span>
+                                </div>
+                                <div class="precio-row">
+                                    <span id="labelCantidad">Cantidad (1):</span>
+                                    <span id="subtotal">${{ evento.precio }}</span>
+                                </div>
+                                <div class="precio-row total">
+                                    <span>Total a pagar:</span>
+                                    <span id="totalPrecio">${{ evento.precio }}</span>
+                                </div>
+                            </div>
+
+                            <!-- Información del usuario -->
+                            <div class="form-group">
+                                <label>Datos de la reserva</label>
+                                <div class="user-info-display">
+                                    <p><strong>Nombre:</strong> {{ user.first_name }} {{ user.last_name }}</p>
+                                    <p><strong>Email:</strong> {{ user.email }}</p>
+                                </div>
+                            </div>
+
+                            <!-- Términos -->
+                            <div class="form-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="terminos" required>
+                                    <span>Acepto los <a href="#" target="_blank">términos y condiciones</a></span>
+                                </label>
+                            </div>
+
+                            <!-- Botón submit -->
+                            <button type="submit" class="btn-confirmar">
+                                Confirmar Reserva
+                            </button>
+
+                            <!-- Botón cancelar -->
+                            <a href="{% url 'events:detail' evento.pk %}" class="btn-cancelar">
+                                Volver
+                            </a>
+                        </form>
+
+                    {% else %}
+                        <div class="mensaje-agotado">
+                            <div class="icono"></div>
+                            <h4>Evento Agotado</h4>
+                            <p>Lamentablemente no hay entradas disponibles para este evento.</p>
+                            <p class="subtexto">Recibe notificaciones sobre eventos similares</p>
+                            <a href="{% url 'end_user:eventos' %}" class="btn-back">Ver otros eventos</a>
+                        </div>
+                    {% endif %}
+
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+{% endblock %}
+
+{% block extra_js %}
+    <!-- SCRIPT PARA CALCULAR TOTAL -->
+    <script>
+        const precioUnitario = {{ evento.precio }};
+        const maxEntradas = {{ disponibles }};
+
+        function actualizarTotal() {
+            const cantidad = parseInt(document.getElementById('cantidad').value) || 1;
+            const subtotal = (precioUnitario * cantidad).toFixed(2);
+            const total = (precioUnitario * cantidad).toFixed(2);
+
+            document.getElementById('labelCantidad').textContent = `Cantidad (${cantidad}):`;
+            document.getElementById('subtotal').textContent = `$${subtotal}`;
+            document.getElementById('totalPrecio').textContent = `$${total}`;
+
+            // Validar botones de incremento/decremento
+            document.getElementById('decrementBtn').disabled = cantidad <= 1;
+            document.getElementById('incrementBtn').disabled = cantidad >= maxEntradas;
+        }
+
+        function decrementCantidad() {
+            const input = document.getElementById('cantidad');
+            let valor = parseInt(input.value) || 1;
+            if (valor > 1) {
+                input.value = valor - 1;
+                actualizarTotal();
+            }
+        }
+
+        function incrementCantidad() {
+            const input = document.getElementById('cantidad');
+            let valor = parseInt(input.value) || 1;
+            if (valor < maxEntradas) {
+                input.value = valor + 1;
+                actualizarTotal();
+            }
+        }
+
+        // Inicializar en carga
+        window.addEventListener('load', actualizarTotal);
+    </script>
 {% endblock %}

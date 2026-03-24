@@ -5,7 +5,7 @@ from .models import Evento
 class EventoForm(forms.ModelForm):
     class Meta:
         model = Evento
-        fields = ['nombre', 'lugar', 'fecha', 'hora', 'precio', 'capacidad', 'descripcion']
+        fields = ['nombre', 'lugar', 'fecha', 'hora', 'precio', 'capacidad', 'categoria', 'descripcion', 'imagen']
         widgets = {
             'nombre': forms.TextInput(attrs={
                 'class': 'form-control',
@@ -34,9 +34,16 @@ class EventoForm(forms.ModelForm):
                 'placeholder': 'Capacidad máxima (ej: 100)',
                 'min': '1'
             }),
+            'categoria': forms.Select(attrs={
+                'class': 'form-control'
+            }),
             'descripcion': forms.Textarea(attrs={
                 'class': 'form-control',
                 'placeholder': 'Descripción del evento (opcional)',
                 'rows': 4
+            }),
+            'imagen': forms.FileInput(attrs={
+                'class': 'form-control-file',
+                'accept': 'image/*'
             }),
         }

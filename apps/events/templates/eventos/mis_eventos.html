@@ -13,15 +13,21 @@
 
     {% for evento in eventos %}
                 <div class="event-card" style="width: 300px; margin-bottom: 30px; display: inline-block; vertical-align: top; margin-right: 20px;">
-                    <div class="event-img" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                        <span class="category-tag">Evento</span>
-                    </div>
+                    {% if evento.imagen %}
+                        <div class="event-img" style="background-image: url('{{ evento.imagen.url }}'); background-size: cover; background-position: center;">
+                            <span class="category-tag">Evento</span>
+                        </div>
+                    {% else %}
+                        <div class="event-img" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                            <span class="category-tag">Evento</span>
+                        </div>
+                    {% endif %}
                     <div class="event-content">
                         <p class="event-date">{{ evento.fecha }}</p>
                         <h3 class="event-title">{{ evento.nombre }}</h3>
                         <div class="event-footer">
                             <span class="price">{{ evento.precio}}</span>
-                            <a href="{% url 'end_user:reservar' evento.id %}" class="btn-book">Reservar</a>
+                            <a href="{% url 'events:detail' evento.id %}" class="btn-book">Ver detalle</a>
                         </div>
                     </div>
                 </div>

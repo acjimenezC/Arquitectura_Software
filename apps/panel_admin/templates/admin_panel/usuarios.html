@@ -1,45 +1,64 @@
 {% extends 'landing.html' %}
+{% load static %}
 
 {% block title %}Panel Admin - Usuarios{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/usuarios.css' %}">
+{% endblock %}
+
 {% block content %}
-<div class="container mt-4">
-	<h2>Gestión de Usuarios</h2>
-	<div class="card mt-3">
-		<div class="card-body">
-			<div class="table-responsive">
-				<table class="table table-striped">
-					<thead>
-						<tr>
-							<th>Usuario</th>
-							<th>Nombre</th>
-							<th>Rol</th>
-							<th>Email</th>
-							<th>Activo</th>
-						</tr>
-					</thead>
-					<tbody>
-						{% for u in usuarios %}
-						<tr>
-							<td>{{ u.username }}</td>
-							<td>{{ u.get_full_name|default:'-' }}</td>
-							<td>{{ u.rol.nombre|default:'-' }}</td>
-							<td>{{ u.email|default:'-' }}</td>
-							<td>
-								{% if u.activo %}
-									<span class="badge bg-success">Activo</span>
-								{% else %}
-									<span class="badge bg-secondary">Inactivo</span>
-								{% endif %}
-							</td>
-						</tr>
-						{% empty %}
-						<tr><td colspan="5" class="text-center">No hay usuarios registrados.</td></tr>
-						{% endfor %}
-					</tbody>
-				</table>
-			</div>
-		</div>
-	</div>
+<div class="usuarios-container">
+    <!-- Header -->
+    <div class="usuarios-header">
+        <h1>Gestión de Usuarios</h1>
+        <p>Total de usuarios registrados en el sistema</p>
+    </div>
+
+    <!-- Tabla de Usuarios -->
+    <div class="usuarios-wrapper">
+        <div class="usuarios-card">
+            {% if usuarios %}
+                <table class="usuarios-table">
+                    <thead>
+                        <tr>
+                            <th>Usuario</th>
+                            <th>Nombre Completo</th>
+                            <th>Rol</th>
+                            <th>Email</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for u in usuarios %}
+                        <tr>
+                            <td class="username">{{ u.username }}</td>
+                            <td class="nombre">{{ u.get_full_name|default:'—' }}</td>
+                            <td>
+                                {% if u.rol %}
+                                    <span class="rol-badge {{ u.rol.nombre|lower }}">{{ u.rol.nombre }}</span>
+                                {% else %}
+                                    <span class="rol-badge usuario">Sin Asignar</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ u.email|default:'—' }}</td>
+                            <td>
+                                {% if u.activo %}
+                                    <span class="status-badge activo">Activo</span>
+                                {% else %}
+                                    <span class="status-badge inactivo">Inactivo</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <div class="usuarios-empty">
+                    <p>No hay usuarios registrados en el sistema.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
 </div>
 {% endblock %}

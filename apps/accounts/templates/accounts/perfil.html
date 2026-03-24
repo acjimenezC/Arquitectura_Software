@@ -1,89 +1,221 @@
 {% extends 'landing.html' %}
+{% load static %}
 
 {% block title %}Mi Perfil{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/perfil.css' %}">
+{% endblock %}
+
 {% block content %}
-<div class="container mt-5" style="margin-left: 50px; margin-bottom: 1000px;">
-    <div class="row">
-        <div class="col-md-3">
-            <div class="card shadow">
-                <div class="card-body text-center">
-                    {% if usuario.foto_perfil %}
-                        <img src="{{ usuario.foto_perfil.url }}" alt="{{ usuario.get_full_name }}" class="rounded-circle mb-3" width="150">
-                    {% else %}
-                        <div class="rounded-circle mx-auto mb-3" style="width: 150px; height: 150px; display: flex; align-items: center; justify-content: center; font-size: 3rem; background-color: #e8e8e8;">
-                            👤
-                        </div>
-                    {% endif %}
-                    <h5>{{ usuario.get_full_name }}</h5>
-                    <p style="color: #666666;">@{{ usuario.username }}</p>
-                    {% if usuario.rol %}
-                        <span class="badge bg-info">{{ usuario.rol.nombre|upper }}</span>
+<div class="perfil-container">
+    <!-- Header -->
+    <div class="perfil-header">
+        <h1>Mi Perfil</h1>
+        <p>Información personal y configuración de cuenta</p>
+    </div>
+
+    <!-- Main Grid -->
+    <div class="perfil-grid">
+        <!-- Left Sidebar -->
+        <div class="perfil-avatar-card">
+            {% if usuario.foto_perfil %}
+                <img src="{{ usuario.foto_perfil.url }}" alt="{{ usuario.get_full_name }}" class="perfil-avatar">
+            {% else %}
+                <div class="perfil-avatar-placeholder"></div>
+            {% endif %}
+            
+            <h3 class="perfil-name">{{ usuario.get_full_name }}</h3>
+            <p class="perfil-username">@{{ usuario.username }}</p>
+            
+            {% if usuario.rol %}
+                <span class="perfil-rol-badge">{{ usuario.rol.nombre }}</span>
+            {% endif %}
+            
+            <div class="perfil-status">
+                <div class="perfil-status-indicator"></div>
+                <span class="perfil-status-text">{{ usuario|yesno:"Activo,Inactivo" }}</span>
+            </div>
+
+            <!-- Upload Foto Form -->
+            <form method="POST" enctype="multipart/form-data" class="perfil-upload-form">
+                {% csrf_token %}
+                <h4>Cambiar Foto de Perfil</h4>
+                
+                <div class="perfil-file-input-wrapper">
+                    <label for="foto_perfil" class="perfil-file-label">
+                        Seleccionar Imagen
+                    </label>
+                    <input 
+                        type="file" 
+                        id="foto_perfil" 
+                        name="foto_perfil" 
+                        class="perfil-file-input"
+                        accept="image/*"
+                        onchange="mostrarNombreArchivo(this)"
+                    >
+                    <div class="perfil-file-name" id="fileName"></div>
+                </div>
+                
+                <button type="submit" class="perfil-upload-btn" id="uploadBtn">Subir Foto</button>
+            </form>
+        </div>
+
+        <!-- Right Content -->
+        <div class="perfil-content">
+            <!-- Información Personal -->
+            <div class="perfil-info-card">
+                <h2>Información Personal</h2>
+                
+                <div class="perfil-info-grid">
+                    <div class="perfil-info-item">
+                        <span class="perfil-info-label">Nombre Completo</span>
+                        <span class="perfil-info-value">{{ usuario.get_full_name|default:"—" }}</span>
+                    </div>
+                    
+                    <div class="perfil-info-item">
+                        <span class="perfil-info-label">Usuario</span>
+                        <span class="perfil-info-value">{{ usuario.username }}</span>
+                    </div>
+                    
+                    <div class="perfil-info-item">
+                        <span class="perfil-info-label">Correo Electrónico</span>
+                        <span class="perfil-info-value perfil-email">{{ usuario.email }}</span>
+                    </div>
+                    
+                    <div class="perfil-info-item">
+                        <span class="perfil-info-label">Teléfono</span>
+                        <span class="perfil-info-value secondary">{{ usuario.telefono|default:"No especificado" }}</span>
+                    </div>
+                    
+                    {% if usuario.fecha_nacimiento %}
+                    <div class="perfil-info-item">
+                        <span class="perfil-info-label">Fecha de Nacimiento</span>
+                        <span class="perfil-info-value">{{ usuario.fecha_nacimiento|date:"d \d\e F \d\e Y" }}</span>
+                    </div>
                     {% endif %}
                 </div>
             </div>
-        </div>
-        
-        <div class="col-md-9">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0">Información de Perfil</h5>
-                </div>
-                <div class="card-body">
-                    <table class="table table-borderless"  style="width:75%;">
-                        <tbody>
-                            <tr>
-                                <td><strong>Nombre Completo</strong></td>
-                                <td>{{ usuario.get_full_name }}</td>
-                                <td><strong>Usuario</strong></td>
-                                <td>{{ usuario.username }}</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Correo Electrónico</strong></td>
-                                <td>{{ usuario.email }}</td>
-                                <td><strong>Teléfono</strong></td>
-                                <td>{{ usuario.telefono|default:"No especificado" }}</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Rol</strong></td>
-                                <td>{{ usuario.rol.nombre|upper|default:"Sin asignar" }}</td>
-                                <td><strong>Estado</strong></td>
-                                <td>
-                                    {% if usuario.activo %}
-                                        <span class="badge bg-success">Activo</span>
-                                    {% else %}
-                                        <span class="badge bg-danger">Inactivo</span>
-                                    {% endif %}
-                                </td>
-                            </tr>
-                            {% if usuario.fecha_nacimiento %}
-                            <tr>
-                                <td><strong>Fecha de Nacimiento</strong></td>
-                                <td>{{ usuario.fecha_nacimiento|date:"d/m/Y" }}</td>
-                                <td></td>
-                                <td></td>
-                            </tr>
+
+            <!-- Estado y Seguridad -->
+            <div class="perfil-info-card">
+                <h2>Estado y Seguridad</h2>
+                
+                <div class="perfil-info-grid">
+                    <div class="perfil-info-item">
+                        <span class="perfil-info-label">Rol</span>
+                        <span class="perfil-info-value">
+                            {% if usuario.rol %}
+                                <span class="perfil-rol-badge">{{ usuario.rol.nombre|upper }}</span>
+                            {% else %}
+                                <span class="perfil-info-value secondary">Sin asignar</span>
                             {% endif %}
-                            <tr>
-                                <td><strong>Fecha de Registro</strong></td>
-                                <td>{{ usuario.fecha_registro|date:"d/m/Y H:i" }}</td>
-                                <td><strong>Último Acceso</strong></td>
-                                <td>{% if usuario.ultimo_acceso %}{{ usuario.ultimo_acceso|date:"d/m/Y H:i" }}{% else %}Nunca{% endif %}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    
-                    <hr>
-                    <div class="mt-3">
-                        {% if usuario.es_organizador or usuario.es_admin %}
-                            <a href="{% url 'events:mis_eventos' %}" class="btn btn-primary me-2">Mis Eventos</a>
-                            <a href="{% url 'events:crear' %}" class="btn btn-primary me-2">+ Crear Evento</a>
-                        {% endif %}
-                        <a href="{% url 'accounts:logout' %}" class="btn btn-danger">Cerrar Sesión</a>
+                        </span>
                     </div>
+                    
+                    <div class="perfil-info-item">
+                        <span class="perfil-info-label">Estado</span>
+                        <span class="perfil-info-value">
+                            {% if usuario.activo %}
+                                <span class="perfil-status-badge activo">Activo</span>
+                            {% else %}
+                                <span class="perfil-status-badge inactivo">Inactivo</span>
+                            {% endif %}
+                        </span>
+                    </div>
+                    
+                    {% if usuario.verificado %}
+                    <div class="perfil-info-item">
+                        <span class="perfil-info-label">Verificación</span>
+                        <span class="perfil-info-value">
+                            <span class="perfil-status-badge activo">Verificado</span>
+                        </span>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="perfil-info-item">
+                        <span class="perfil-info-label">Último Acceso</span>
+                        <span class="perfil-info-value secondary">
+                            {% if usuario.ultimo_acceso %}
+                                {{ usuario.ultimo_acceso|date:"d/m/Y H:i" }}
+                            {% else %}
+                                Nunca
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Historial -->
+            <div class="perfil-info-card">
+                <h2>Historial</h2>
+                
+                <div class="perfil-info-grid">
+                    <div class="perfil-info-item">
+                        <span class="perfil-info-label">Fecha de Registro</span>
+                        <span class="perfil-info-value">{{ usuario.fecha_registro|date:"d \d\e F \d\e Y" }}</span>
+                    </div>
+                    
+                    <div class="perfil-info-item">
+                        <span class="perfil-info-label">Hora de Registro</span>
+                        <span class="perfil-info-value">{{ usuario.fecha_registro|time:"H:i" }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Acciones -->
+            <div class="perfil-info-card">
+                <div class="perfil-actions">
+                    {% if usuario.es_organizador or usuario.es_admin %}
+                        <a href="{% url 'events:mis_eventos' %}" class="perfil-btn perfil-btn-primary">Mis Eventos</a>
+                        <a href="{% url 'events:crear_evento' %}" class="perfil-btn perfil-btn-secondary">+ Crear Evento</a>
+                    {% endif %}
+                    
+                    {% if usuario.es_usuario %}
+                        <a href="{% url 'end_user:mis_tickets' %}" class="perfil-btn perfil-btn-primary">Mis Tickets</a>
+                    {% endif %}
+                    
+                    <a href="{% url 'accounts:logout' %}" class="perfil-btn perfil-btn-danger">Cerrar Sesión</a>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function mostrarNombreArchivo(input) {
+    const fileName = document.getElementById('fileName');
+    const uploadBtn = document.getElementById('uploadBtn');
+    
+    if (input.files && input.files[0]) {
+        const file = input.files[0];
+        
+        // Validar que sea imagen
+        if (!file.type.startsWith('image/')) {
+            fileName.textContent = 'Por favor selecciona una imagen válida';
+            fileName.style.color = '#dc3545';
+            uploadBtn.disabled = true;
+            return;
+        }
+        
+        // Validar tamaño máximo (5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            fileName.textContent = 'La imagen debe ser menor a 5MB';
+            fileName.style.color = '#dc3545';
+            uploadBtn.disabled = true;
+            return;
+        }
+        
+        fileName.textContent = 'Archivo: ' + file.name;
+        fileName.style.color = '#666666';
+        uploadBtn.disabled = false;
+    } else {
+        fileName.textContent = '';
+        uploadBtn.disabled = true;
+    }
+}
+</script>
 {% endblock %}

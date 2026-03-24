@@ -1,0 +1,227 @@
+{% extends 'landing.html' %}
+{% load static %}
+
+{% block title %}Ticket #{{ ticket.id }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/ticket_detail.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="ticket-detail-container">
+    <!-- Header -->
+    <div class="detail-header">
+        <div class="header-back">
+            <a href="{% url 'panel_admin:tickets_list' %}" class="back-link">← Volver a Tickets</a>
+        </div>
+        <h1>Ticket #{{ ticket.id }}</h1>
+    </div>
+
+    <div class="detail-content">
+        <!-- Información Principal -->
+        <div class="info-grid">
+            <!-- Card 1: Código Único -->
+            <div class="info-card">
+                <h3>Código Único</h3>
+                <div class="code-display">
+                    <code>{{ ticket.codigo_unico }}</code>
+                    <button class="btn-copy" onclick="copyToClipboard('{{ ticket.codigo_unico }}')">📋 Copiar</button>
+                </div>
+            </div>
+
+            <!-- Card 2: Usuario -->
+            <div class="info-card">
+                <h3>Usuario</h3>
+                <div class="user-info">
+                    <a href="{% url 'panel_admin:usuario_detail' ticket.usuario.id %}" class="user-link">
+                        {{ ticket.usuario.username }}
+                    </a>
+                    <p>{{ ticket.usuario.email }}</p>
+                </div>
+            </div>
+
+            <!-- Card 3: Evento -->
+            <div class="info-card">
+                <h3>Evento</h3>
+                <a href="{% url 'admin:events_evento_change' ticket.evento.id %}" class="event-link">
+                    {{ ticket.evento.nombre }}
+                </a>
+                <p class="event-date">{{ ticket.evento.fecha|date:"d/m/Y H:i" }}</p>
+            </div>
+
+            <!-- Card 4: Cantidad -->
+            <div class="info-card">
+                <h3>Cantidad de Tickets</h3>
+                <div class="big-value">{{ ticket.cantidad }}</div>
+            </div>
+        </div>
+
+        <div class="detail-row">
+            <!-- Fechas -->
+            <div class="info-section">
+                <h3> Fechas</h3>
+                <table class="info-table">
+                    <tr>
+                        <td>Fecha de Compra:</td>
+                        <td><strong>{{ ticket.fecha_compra|date:"d/m/Y H:i:s" }}</strong></td>
+                    </tr>
+                    {% if ticket.fecha_validacion %}
+                        <tr>
+                            <td>Fecha de Validación:</td>
+                            <td><strong>{{ ticket.fecha_validacion|date:"d/m/Y H:i:s" }}</strong></td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td>Fecha de Validación:</td>
+                            <td><span class="pending">Aún no validado</span></td>
+                        </tr>
+                    {% endif %}
+                    <tr>
+                        <td>Días desde compra:</td>
+                        <td><strong>{{ dias_desde_compra }} días</strong></td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- Estado -->
+            <div class="info-section">
+                <h3> Estado</h3>
+                <table class="info-table">
+                    <tr>
+                        <td>Estado Actual:</td>
+                        <td>
+                            {% if ticket.activo %}
+                                <span class="status-badge status-active">ACTIVO</span>
+                            {% else %}
+                                <span class="status-badge status-cancelled">CANCELADO</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Validación:</td>
+                        <td>
+                            {% if ticket.validado %}
+                                <span class="status-badge status-validated"> VALIDADO</span>
+                            {% else %}
+                                <span class="status-badge status-pending"> PENDIENTE</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Precio Total:</td>
+                        <td><strong>${{ precio_total }}</strong></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- Notas -->
+        <div class="info-section full-width">
+            <h3>📝 Notas</h3>
+            <form method="post" class="notes-form">
+                {% csrf_token %}
+                <input type="hidden" name="accion" value="actualizar_notas">
+                <textarea name="notas" class="notes-textarea" placeholder="Agrega notas sobre este ticket...">{{ ticket.notas }}</textarea>
+                <button type="submit" class="btn btn-primary">Guardar Notas</button>
+            </form>
+        </div>
+
+        <!-- Código QR -->
+        <div class="info-section full-width">
+            <h3>📱 Código QR</h3>
+            <div class="qr-container">
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='white'/%3E%3Ctext x='50' y='50' text-anchor='middle' dominant-baseline='middle'%3EQR%3C/text%3E%3C/svg%3E" alt="QR Code" class="qr-image">
+                <p class="qr-code">{{ ticket.obtener_codigo_qr }}</p>
+            </div>
+        </div>
+
+        <!-- Acciones -->
+        <div class="actions-section full-width">
+            <h3>⚡ Acciones</h3>
+            <div class="actions-grid">
+                <!-- Validación -->
+                {% if ticket.activo and not ticket.validado %}
+                    <form method="post" class="action-form">
+                        {% csrf_token %}
+                        <input type="hidden" name="accion" value="cambiar_validacion">
+                        <input type="hidden" name="validado" value="true">
+                        <button type="submit" class="btn btn-success action-btn">
+                            ✓ Marcar como Validado
+                        </button>
+                    </form>
+                {% elif ticket.validado %}
+                    <form method="post" class="action-form">
+                        {% csrf_token %}
+                        <input type="hidden" name="accion" value="cambiar_validacion">
+                        <input type="hidden" name="validado" value="false">
+                        <button type="submit" class="btn btn-warning action-btn">
+                            ↩ Revertir Validación
+                        </button>
+                    </form>
+                {% endif %}
+
+                <!-- Cancelación -->
+                {% if ticket.activo and not ticket.validado %}
+                    <button class="btn btn-danger action-btn" onclick="openCancelModal()">
+                        ✕ Cancelar Ticket
+                    </button>
+                {% elif not ticket.activo %}
+                    <form method="post" class="action-form">
+                        {% csrf_token %}
+                        <input type="hidden" name="accion" value="cambiar_estado">
+                        <input type="hidden" name="estado" value="activo">
+                        <button type="submit" class="btn btn-info action-btn">
+                            ↻ Reactivar Ticket
+                        </button>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Cancelación -->
+<div id="cancelModal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeCancelModal()">&times;</span>
+        <h2>Cancelar Ticket</h2>
+        <p>¿Estás seguro que deseas cancelar este ticket?</p>
+        
+        <form method="post" action="{% url 'panel_admin:cancelar_ticket' ticket.id %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="razon">Razón de Cancelación (opcional):</label>
+                <textarea name="razon" id="razon" rows="4" placeholder="Explica por qué se cancela este ticket..."></textarea>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeCancelModal()">Cancelar</button>
+                <button type="submit" class="btn btn-danger">Confirmar Cancelación</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function openCancelModal() {
+    document.getElementById('cancelModal').style.display = 'block';
+}
+
+function closeCancelModal() {
+    document.getElementById('cancelModal').style.display = 'none';
+}
+
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        alert('Código copiado al portapapeles');
+    });
+}
+
+window.onclick = function(event) {
+    const modal = document.getElementById('cancelModal');
+    if (event.target == modal) {
+        modal.style.display = 'none';
+    }
+}
+</script>
+
+{% endblock %}

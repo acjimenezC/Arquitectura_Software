@@ -3,40 +3,154 @@
 
 {% block title %}Mis Tickets{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/mis_tickets.css' %}">
+{% endblock %}
+
 {% block content %}
-<div class="container mt-4">
-	<h2 style="margin-top: 20px; text-align: center;">Mis Tickets</h2>
-	<div class="card mt-3">
-		<div class="card-body">
-			{% if tickets %}
-				<ul class="list-group">
-					{% for t in tickets %}
-						<li class="list-group-item d-flex justify-content-between align-items-center">
-							<div>
-								<strong>{{ t.evento }}</strong><br>
-								<small style="color: #666666;">Comprado: {{ t.fecha_compra }}</small>
-							</div>
-							<span class="badge bg-primary rounded-pill">{{ t.cantidad }}</span>
-						</li>
+<div class="mis-tickets-container">
+	<!-- Header -->
+	<div class="tickets-header">
+		<h1>Mis Tickets</h1>
+		<p>Administra tus entradas a eventos</p>
+	</div>
+
+	{% if tickets %}
+		<!-- Tickets Table -->
+		<div class="table-container">
+			<table class="tickets-table">
+				<thead>
+					<tr>
+						<th>Evento</th>
+						<th>Lugar</th>
+						<th>Fecha</th>
+						<th>Estado</th>
+						<th>Acciones</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for ticket in tickets %}
+						<tr class="{% if not ticket.activo %}row-cancelled{% endif %}">
+							<td class="evento-name">
+								<strong>{{ ticket.evento.nombre }}</strong>
+							</td>
+							<td>{{ ticket.evento.lugar }}</td>
+							<td class="text-center">
+								<strong>{{ ticket.cantidad }}</strong>
+							</td>
+							<td>{{ ticket.evento.fecha|date:"d/m/Y" }}</td>
+							<td>
+								<span class="status-badge {% if ticket.activo %}status-active{% else %}status-cancelled{% endif %}">
+									{% if ticket.activo %}
+										ACTIVO
+									{% else %}
+										CANCELADO
+									{% endif %}
+								</span>
+							</td>
+							<td class="actions-cell">
+								{% if ticket.activo and not ticket.validado %}
+									<button class="btn-action btn-cancel" onclick="openCancelModal({{ ticket.id }})">
+										Cancelar
+									</button>
+								{% else %}
+									<button class="btn-action btn-cancel disabled" disabled title="{% if ticket.validado %}Ticket validado{% else %}Ticket cancelado{% endif %}">
+										Cancelar
+									</button>
+								{% endif %}
+							</td>
+						</tr>
 					{% endfor %}
-				</ul>
-			{% else %}
-				<div class="alert alert-info" style="margin-bottom: 750px; text-align: center;">
-					No tienes tickets comprados.
-				</div>
-				<div class="empty-state" style="margin-top: 50px; margin-bottom: 50px; text-align: center;">
-					<h3>¡Explora nuestros eventos!</h3>
-					<p>Reserva tus entradas para los próximos eventos exclusivos.</p>
-					<a href="{% url 'end_user:eventos' %}" class="btn-search" style="color: white; padding: 5px 5px; text-decoration: none; border-radius: 5px; margin: 10px auto;">
-						Ver Eventos
-					</a>
-					<p>O crea tus propios eventos.</p>
-					<a href="{% url 'events:crear_evento' %}" class="btn-search" style="color: white; padding: 5px 5px; text-decoration: none; border-radius: 5px; margin: 10px;">
-						Crear Evento
-					</a>
-					<div class="empty-state" style="margin-top: 10px;">
-			{% endif %}
+				</tbody>
+			</table>
 		</div>
+
+	{% else %}
+		<!-- Empty State -->
+		<div class="empty-state">
+			<div class="empty-icon">Tickets</div>
+			<h3>No tienes tickets aun</h3>
+			<p>Explora nuestros eventos exclusivos y reserva tus entradas. No te pierdas ningun evento importante.</p>
+			<div class="empty-state-actions">
+				<a href="{% url 'end_user:eventos' %}" class="btn btn-primary">
+					Explorar Eventos
+				</a>
+			</div>
+		</div>
+	{% endif %}
+</div>
+
+<!-- Modal de Cancelación -->
+<div id="cancelModal" class="modal">
+	<div class="modal-content">
+		<span class="close-modal" onclick="closeCancelModal()">x</span>
+		<div class="modal-header">
+			<h2>Cancelar Ticket</h2>
+			<p>Esta acción no se puede deshacer. Se procesará un reembolso si aplica.</p>
+		</div>
+
+		<form method="post" id="cancelForm">
+			{% csrf_token %}
+			<input type="hidden" name="accion" value="cancelar_ticket">
+			<input type="hidden" name="ticket_id" id="ticketId" value="">
+
+			<!-- Aviso -->
+			<div class="validation-message validation-warning">
+				AVISO: Al cancelar tu ticket, perderás tu reserva y no podrás asistir al evento.
+			</div>
+
+			<!-- Razón -->
+			<div class="form-group">
+				<label for="razon">Razón de Cancelación (Opcional)</label>
+				<textarea name="razon" id="razon" placeholder="Cuéntanos por qué cancelas tu ticket..."></textarea>
+			</div>
+
+			<!-- Acciones -->
+			<div class="modal-actions">
+				<button type="button" class="btn btn-secondary" onclick="closeCancelModal()">
+					Volver
+				</button>
+				<button type="submit" class="btn btn-danger">
+					Confirmar Cancelación
+				</button>
+			</div>
+		</form>
 	</div>
 </div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+	// Abrir modal de cancelación
+	function openCancelModal(ticketId) {
+		document.getElementById('ticketId').value = ticketId;
+		document.getElementById('cancelModal').style.display = 'flex';
+		document.body.style.overflow = 'hidden';
+	}
+
+	// Cerrar modal de cancelación
+	function closeCancelModal() {
+		document.getElementById('cancelModal').style.display = 'none';
+		document.body.style.overflow = 'auto';
+		document.getElementById('razon').value = '';
+	}
+
+	// Cerrar modal al hacer clic fuera
+	window.onclick = function(event) {
+		const modal = document.getElementById('cancelModal');
+		if (event.target == modal) {
+			closeCancelModal();
+		}
+	}
+
+	// Validar formulario antes de enviar
+	document.getElementById('cancelForm').addEventListener('submit', function(e) {
+		const ticketId = document.getElementById('ticketId').value;
+		if (!ticketId) {
+			e.preventDefault();
+			alert('Por favor selecciona un ticket válido');
+		}
+	});
+</script>
 {% endblock %}

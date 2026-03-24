@@ -16,12 +16,57 @@
     <nav>
         <a href="{% url 'home' %}" class="logo">TICKER<span>FISHER</span></a>
         <div class="nav-links">
-            <a href="#featured">Explorar Eventos</a>
-            <a href="#categories">Corporativo</a>
-            <a href="#">Soporte</a>
-            <a href="{% url 'end_user:eventos' %}">Crear Evento</a>
+            <a href="{% url 'end_user:eventos' %}">Explorar Eventos</a>
             {% if user.is_authenticated %}
-                <a href="{% url 'accounts:logout' %}" class="btn-login">Cerrar Sesión</a>
+                {% if user.es_organizador %}
+                    <a href="{% url 'organizer:dashboard' %}">Panel del Organizador</a>
+                    <a href="{% url 'events:mis_eventos' %}">Mis Eventos</a>
+                {% elif user.es_admin %}
+                    <a href="{% url 'panel_admin:dashboard' %}">Panel Admin</a>
+                {% else %}
+                    <a href="{% url 'end_user:mis_tickets' %}">Mis Tickets</a>
+                {% endif %}
+                
+                <!-- PERFIL DROPDOWN -->
+                <div class="perfil-dropdown">
+                    <button class="perfil-btn" onclick="togglePerfilDropdown()">
+                        {% if user.foto_perfil %}
+                            <img src="{{ user.foto_perfil.url }}" alt="{{ user.get_full_name }}" class="perfil-avatar">
+                        {% else %}
+                            <div class="perfil-avatar-placeholder"></div>
+                        {% endif %}
+                        <span>Mi Perfil</span>
+                    </button>
+                    
+                    <div class="perfil-dropdown-content" id="perfilDropdown">
+                        <div class="perfil-card">
+                            {% if user.foto_perfil %}
+                                <img src="{{ user.foto_perfil.url }}" alt="{{ user.get_full_name }}" class="perfil-img">
+                            {% else %}
+                                <div class="perfil-img-placeholder"></div>
+                            {% endif %}
+                            
+                            <h4>{{ user.get_full_name }}</h4>
+                            <p class="username">@{{ user.username }}</p>
+                            
+                            {% if user.rol %}
+                                <span class="rol-badge">{{ user.rol.nombre|upper }}</span>
+                            {% endif %}
+                            
+                            <div class="perfil-info">
+                                <p><strong>Email:</strong> {{ user.email }}</p>
+                                {% if user.telefono %}
+                                    <p><strong>Teléfono:</strong> {{ user.telefono }}</p>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="perfil-actions">
+                                <a href="{% url 'accounts:perfil' %}" class="btn-perfil-view">Ver Perfil Completo</a>
+                                <a href="{% url 'accounts:logout' %}" class="btn-perfil-logout">Cerrar Sesión</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             {% else %}
                 <a href="{% url 'accounts:login' %}" class="btn-login">Acceso Cliente</a>
             {% endif %}
@@ -34,24 +79,36 @@
         <p>Reserva tus entradas para los eventos corporativos, culturales y deportivos más importantes del mundo.</p>
         
         <div class="search-container">
-            <div class="search-group">
-                <label>¿Qué buscas?</label>
-                <input type="text" placeholder="Concierto, gala, foro...">
-            </div>
-            <div class="search-group">
-                <label>Ubicación</label>
-                <select>
-                    <option>Cualquier ciudad</option>
-                    <option>Madrid</option>
-                    <option>Bogotá</option>
-                    <option>Ciudad de México</option>
-                </select>
-            </div>
-            <div class="search-group">
-                <label>Fecha</label>
-                <input type="date">
-            </div>
-            <button class="btn-search">BUSCAR</button>
+            <form method="GET" action="{% url 'home' %}" class="search-form">
+                <div class="search-group">
+                    <label>¿QUÉ BUSCAS?</label>
+                    <input type="text" name="q" placeholder="Concierto, gala, foro..." value="{{ search_params.q }}">
+                </div>
+                <div class="search-group">
+                    <label>UBICACIÓN</label>
+                    <select name="lugar">
+                        <option value="">Cualquier ciudad</option>
+                        {% for ciudad in ciudades %}
+                            <option value="{{ ciudad }}" {% if search_params.lugar == ciudad %}selected{% endif %}>{{ ciudad }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="search-group">
+                    <label>FECHA</label>
+                    <input type="date" name="fecha" value="{{ search_params.fecha }}">
+                </div>
+                <div class="search-group">
+                    <label>CATEGORÍA</label>
+                    <select name="categoria">
+                        <option value="">Cualquier categoría</option>
+                        <option value="Empresariales" {% if search_params.categoria == 'Empresariales' %}selected{% endif %}>Empresariales</option>
+                        <option value="Conciertos" {% if search_params.categoria == 'Conciertos' %}selected{% endif %}>Conciertos</option>
+                        <option value="Deportes" {% if search_params.categoria == 'Deportes' %}selected{% endif %}>Deportes</option>
+                        <option value="Festivales" {% if search_params.categoria == 'Festivales' %}selected{% endif %}>Festivales</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-search">BUSCAR</button>
+            </form>
         </div>
     </section>
 
@@ -65,111 +122,52 @@
         </div>
 
         <div class="events-grid" style="margin-left: 50px;">
-
-            
-            <!-- Card 1 -->
-            {% comment %} <div class="event-card">
-                <div class="event-img" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                    <span class="category-tag">Corporativo</span>
-                </div>
-                <div class="event-content">
-                    <p class="event-date">24 OCT, 2024 • 09:00 AM</p>
-                    <h3 class="event-title">Global Tech Summit: Future of AI</h3>
-                    <div class="event-footer">
-                        <span class="price">$249.00</span>
-                        <button class="btn-book">Reservar</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Card 2 -->
-            <div class="event-card">
-                <div class="event-img" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
-                    <span class="category-tag">Música</span>
-                </div>
-                <div class="event-content">
-                    <p class="event-date">15 NOV, 2024 • 08:00 PM</p>
-                    <h3 class="event-title">Sinfónica de Gala: Noche de Clásicos</h3>
-                    <div class="event-footer">
-                        <span class="price">$120.00</span>
-                        <button class="btn-book">Reservar</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Card 3 -->
-            <div class="event-card">
-                <div class="event-img" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
-                    <span class="category-tag">Deportes</span>
-                </div>
-                <div class="event-content">
-                    <p class="event-date">02 DIC, 2024 • 10:00 AM</p>
-                    <h3 class="event-title">Masters Invitational Championship</h3>
-                    <div class="event-footer">
-                        <span class="price">$450.00</span>
-                        <button class="btn-book">Reservar</button>
-                    </div>
-                </div>
-            </div> {% endcomment %}
-
-
-            <div class="events-grid">
-            <!-- Ejemplo: repetir con un for si se proporciona contexto 'eventos' -->
             {% for evento in eventos %}
                 <div class="event-card">
-                    <div class="event-img" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                        <span class="category-tag">Evento</span>
-                    </div>
+                    {% if evento.imagen %}
+                        <div class="event-img" style="background-image: url('{{ evento.imagen.url }}'); background-size: cover; background-position: center;">
+                            <span class="category-tag">Evento</span>
+                        </div>
+                    {% else %}
+                        {% with gradient_index=forloop.counter0|add:0 %}
+                            {% if gradient_index|divisibleby:5 %}
+                                <div class="event-img" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                            {% elif gradient_index|divisibleby:5 == False and gradient_index|divisibleby:4 %}
+                                <div class="event-img" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                            {% elif gradient_index|divisibleby:5 == False and gradient_index|divisibleby:3 %}
+                                <div class="event-img" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                            {% elif gradient_index|divisibleby:5 == False and gradient_index|divisibleby:2 %}
+                                <div class="event-img" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                            {% else %}
+                                <div class="event-img" style="background: linear-gradient(135deg, #D4AF37 0%, #C9A227 100%);">
+                            {% endif %}
+                                <span class="category-tag">Evento</span>
+                            </div>
+                        {% endwith %}
+                    {% endif %}
                     <div class="event-content">
-                        <p class="event-date">{{ evento.fecha }}</p>
+                        <p class="event-date">{{ evento.fecha|date:"d \d\e M" }} - {{ evento.hora|time:"H:i" }}</p>
                         <h3 class="event-title">{{ evento.nombre }}</h3>
+                        <p class="event-location" style="font-size: 0.82rem; color: #888; margin-bottom: 10px;">
+                            <i></i> {{ evento.lugar }}
+                        </p>
                         <div class="event-footer">
-                            <span class="price">$249.00</span>
+                            <span class="price">${{ evento.precio }}</span>
                             <a href="{% url 'end_user:reservar' evento.id %}" class="btn-book">Reservar</a>
                         </div>
                     </div>
                 </div>
             {% empty %}
-                <div class="col-12">
-                    <div class="alert-message">
-                        <span>No hay eventos disponibles actualmente. Vuelve pronto para ver nuevas opciones.</span>
+                <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px;">
+                    <div class="empty-state">
+                        <h3>Próximamente</h3>
+                        <p>Estamos preparando los mejores eventos para ti.</p>
                     </div>
                 </div>
             {% endfor %}
         </div>
-
-        {% if not eventos %}
-            <div class="empty-state">
-                <h3>Próximamente</h3>
-                <p>Estamos preparando los mejores eventos para ti.</p>
-            </div>
-        {% endif %}
-        </div>
     </main>
 
-    <section class="categories-section" id="categories">
-        <div class="section-header" style="justify-content: center; text-align: center;">
-            <div class="title-area">
-                <h2 style="margin-bottom: 15px;">Explora por Categoría</h2>
-                <div class="underline" style="margin: 0 auto;"></div>
-            </div>
-        </div>
-        
-        <div class="cat-grid">
-            <div class="cat-card">
-                <strong>Empresariales</strong>
-            </div>
-            <div class="cat-card">
-                <strong>Conciertos</strong>
-            </div>
-            <div class="cat-card">
-                <strong>Deportes</strong>
-            </div>
-            <div class="cat-card">
-                <strong>Festivales</strong>
-            </div>
-        </div>
-    </section>
     {% endblock %}
 
     <footer>
@@ -209,6 +207,25 @@
     </footer>
 
     <script src="{% static 'js/script.js' %}"></script>
+    
+    <!-- PERFIL DROPDOWN SCRIPT -->
+    <script>
+        function togglePerfilDropdown() {
+            const dropdown = document.getElementById('perfilDropdown');
+            dropdown.classList.toggle('active');
+        }
+
+        // Cerrar dropdown cuando se hace click fuera
+        document.addEventListener('click', function(event) {
+            const perfilDropdown = document.querySelector('.perfil-dropdown');
+            const dropdown = document.getElementById('perfilDropdown');
+            
+            if (perfilDropdown && !perfilDropdown.contains(event.target)) {
+                dropdown.classList.remove('active');
+            }
+        });
+    </script>
+    
     {% block extra_js %}{% endblock %}
 </body>
 </html>

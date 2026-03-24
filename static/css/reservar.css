@@ -1,0 +1,651 @@
+/* ══════════════════════════════════════════════════════════════
+   RESERVA PAGE - ESTILOS
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── BREADCRUMB ─────────────────────────────────────────────── */
+.breadcrumb-section {
+    background-color: var(--fondo-alterno);
+    padding: 1.5rem 5%;
+    border-bottom: 1px solid var(--bordes);
+}
+
+.breadcrumb-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    font-size: 0.95rem;
+    color: var(--gris-oscuro);
+}
+
+.breadcrumb-container a {
+    color: var(--amarillo-principal);
+    text-decoration: none;
+    font-weight: 600;
+    transition: var(--transition);
+}
+
+.breadcrumb-container a:hover {
+    color: var(--amarillo-hover);
+}
+
+.breadcrumb-container span {
+    margin: 0 0.5rem;
+    color: var(--gris-oscuro);
+}
+
+/* ── MESSAGES ────────────────────────────────────────────────── */
+.messages-section {
+    background-color: var(--blanco);
+    padding: 1.5rem 5%;
+}
+
+.messages-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.message {
+    padding: 1.25rem 1.5rem;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.message-error {
+    background-color: #ffe6e6;
+    border-left: 4px solid #e74c3c;
+    color: #c0392b;
+}
+
+.message-success {
+    background-color: #e6ffe6;
+    border-left: 4px solid #27ae60;
+    color: #229954;
+}
+
+.message-warning {
+    background-color: #fff8e6;
+    border-left: 4px solid #f39c12;
+    color: #d68910;
+}
+
+.message-info {
+    background-color: #e6f2ff;
+    border-left: 4px solid #3498db;
+    color: #2874a6;
+}
+
+.message-content {
+    flex: 1;
+    font-weight: 500;
+}
+
+.message-close {
+    background: none;
+    border: none;
+    color: inherit;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+}
+
+.message-close:hover {
+    opacity: 0.7;
+}
+
+/* ── MAIN CONTAINER ─────────────────────────────────────────── */
+.reserva-container {
+    background-color: var(--blanco);
+    padding: 3rem 5%;
+}
+
+.reserva-inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 420px;
+    gap: 3rem;
+}
+
+/* ── EVENT SUMMARY ───────────────────────────────────────────── */
+.evento-resumen {
+    background-color: var(--blanco);
+    border: 1px solid var(--bordes);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 2rem;
+}
+
+.evento-resumen-img {
+    width: 280px;
+    height: 400px;
+    object-fit: cover;
+}
+
+.evento-resumen-placeholder {
+    width: 280px;
+    height: 400px;
+    background: linear-gradient(135deg, var(--negro-principal) 0%, var(--negro-suave) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 4rem;
+    opacity: 0.3;
+}
+
+.evento-resumen-content {
+    padding: 2rem 2rem 2rem 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.evento-resumen-content h2 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--negro-principal);
+    margin-bottom: 1rem;
+    line-height: 1.3;
+}
+
+.categoria-badge {
+    display: inline-block;
+    background-color: var(--amarillo-principal);
+    color: var(--negro-principal);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    margin-bottom: 1.5rem;
+    width: fit-content;
+}
+
+.info-item {
+    margin-bottom: 1.5rem;
+}
+
+.info-item strong {
+    display: block;
+    color: var(--negro-principal);
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+    font-size: 0.95rem;
+}
+
+.info-item p {
+    color: var(--gris-oscuro);
+    font-size: 1rem;
+    margin: 0;
+}
+
+.precio-unit {
+    font-size: 1.4rem !important;
+    color: var(--amarillo-principal) !important;
+    font-weight: 700 !important;
+}
+
+.info-item.unavailable {
+    background-color: #ffe6e6;
+    padding: 1rem;
+    border-radius: 8px;
+    border-left: 4px solid #e74c3c;
+}
+
+.info-item.unavailable strong {
+    color: #c0392b;
+}
+
+.info-item.unavailable p {
+    color: #e74c3c;
+}
+
+/* ── RESERVATION FORM CONTAINER ─────────────────────────────── */
+.reserva-form-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.reserva-card {
+    background-color: var(--blanco);
+    border: 2px solid var(--bordes);
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    position: sticky;
+    top: 90px;
+}
+
+.reserva-card h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--negro-principal);
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--amarillo-principal);
+}
+
+/* ── FORM GROUPS ─────────────────────────────────────────────── */
+.form-group {
+    margin-bottom: 2rem;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 600;
+    color: var(--negro-principal);
+    margin-bottom: 0.75rem;
+    font-size: 0.95rem;
+}
+
+/* ── CANTIDAD CONTROL ────────────────────────────────────────── */
+.cantidad-control {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background-color: var(--fondo-alterno);
+    padding: 0.75rem;
+    border-radius: 8px;
+    border: 1px solid var(--bordes);
+}
+
+.btn-qty {
+    background-color: var(--amarillo-principal);
+    color: var(--negro-principal);
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-qty:hover:not(:disabled) {
+    background-color: var(--amarillo-hover);
+    transform: scale(1.05);
+}
+
+.btn-qty:disabled {
+    background-color: #ccc;
+    color: #999;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+#cantidad {
+    flex: 1;
+    border: none;
+    background-color: transparent;
+    font-size: 1.3rem;
+    font-weight: 700;
+    text-align: center;
+    color: var(--negro-principal);
+}
+
+#cantidad:focus {
+    outline: none;
+}
+
+.help-text {
+    font-size: 0.8rem;
+    color: var(--gris-oscuro);
+    margin-top: 0.5rem;
+    margin-bottom: 0;
+}
+
+/* ── RESUMEN DE PRECIO ───────────────────────────────────────── */
+.resumen-precio {
+    background: linear-gradient(135deg, var(--fondo-alterno) 0%, #f5f5f5 100%);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    border: 1px solid var(--bordes);
+}
+
+.precio-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.95rem;
+    color: var(--gris-oscuro);
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+}
+
+.precio-row:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.precio-row.total {
+    border-top: 2px solid var(--amarillo-principal);
+    padding-top: 0.75rem;
+    padding-bottom: 0;
+    margin-top: 0.75rem;
+    margin-bottom: 0;
+}
+
+.precio-row.total span {
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.precio-row.total span:last-child {
+    color: var(--amarillo-principal);
+}
+
+/* ── USER INFO DISPLAY ──────────────────────────────────────── */
+.user-info-display {
+    background-color: var(--fondo-alterno);
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid var(--bordes);
+}
+
+.user-info-display p {
+    margin-bottom: 0.75rem;
+    color: var(--gris-oscuro);
+    font-size: 0.95rem;
+}
+
+.user-info-display p:last-child {
+    margin-bottom: 0;
+}
+
+.user-info-display strong {
+    color: var(--negro-principal);
+}
+
+/* ── CHECKBOX LABEL ─────────────────────────────────────────── */
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: var(--gris-oscuro);
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: var(--amarillo-principal);
+}
+
+.checkbox-label a {
+    color: var(--amarillo-principal);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.checkbox-label a:hover {
+    text-decoration: underline;
+    color: var(--amarillo-hover);
+}
+
+/* ── BUTTONS ─────────────────────────────────────────────────── */
+.btn-confirmar {
+    width: 100%;
+    padding: 1.2rem;
+    background-color: var(--amarillo-principal);
+    color: var(--negro-principal);
+    border: none;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: var(--transition);
+    margin-bottom: 1rem;
+}
+
+.btn-confirmar:hover {
+    background-color: var(--amarillo-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(212, 175, 55, 0.3);
+}
+
+.btn-confirmar:active {
+    transform: translateY(0);
+}
+
+.btn-cancelar {
+    display: block;
+    width: 100%;
+    padding: 1rem;
+    background-color: transparent;
+    color: var(--gris-oscuro);
+    border: 2px solid var(--bordes);
+    border-radius: 8px;
+    text-align: center;
+    text-decoration: none;
+    font-weight: 600;
+    transition: var(--transition);
+}
+
+.btn-cancelar:hover {
+    border-color: var(--amarillo-principal);
+    color: var(--amarillo-principal);
+    background-color: var(--fondo-alterno);
+}
+
+/* ── MENSAJE AGOTADO ─────────────────────────────────────────── */
+.mensaje-agotado {
+    text-align: center;
+    padding: 2rem;
+}
+
+.mensaje-agotado .icono {
+    font-size: 3.5rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.mensaje-agotado h4 {
+    font-size: 1.3rem;
+    color: var(--negro-principal);
+    margin-bottom: 0.75rem;
+    font-weight: 700;
+}
+
+.mensaje-agotado p {
+    color: var(--gris-oscuro);
+    margin-bottom: 0.5rem;
+}
+
+.mensaje-agotado .subtexto {
+    font-size: 0.9rem;
+    margin-top: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.btn-back {
+    display: inline-block;
+    background-color: var(--amarillo-principal);
+    color: var(--negro-principal);
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: var(--transition);
+}
+
+.btn-back:hover {
+    background-color: var(--amarillo-hover);
+    transform: translateY(-2px);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   RESPONSIVE DESIGN
+   ══════════════════════════════════════════════════════════════ */
+
+@media (max-width: 1200px) {
+    .reserva-inner {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+
+    .evento-resumen {
+        grid-template-columns: 250px 1fr;
+        gap: 1.5rem;
+    }
+
+    .evento-resumen-img,
+    .evento-resumen-placeholder {
+        width: 250px;
+        height: 300px;
+    }
+
+    .reserva-card {
+        position: static;
+    }
+}
+
+@media (max-width: 768px) {
+    .reserva-container {
+        padding: 2rem 4%;
+    }
+
+    .evento-resumen {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .evento-resumen-img,
+    .evento-resumen-placeholder {
+        width: 100%;
+        height: 250px;
+    }
+
+    .evento-resumen-content {
+        padding: 1.5rem;
+    }
+
+    .evento-resumen-content h2 {
+        font-size: 1.5rem;
+    }
+
+    .reserva-card {
+        padding: 1.5rem;
+    }
+
+    .reserva-card h3 {
+        font-size: 1.3rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .cantidad-control {
+        gap: 0.75rem;
+    }
+
+    .btn-qty {
+        width: 36px;
+        height: 36px;
+        font-size: 1rem;
+    }
+
+    #cantidad {
+        font-size: 1.1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .reserva-container {
+        padding: 1.5rem 3%;
+    }
+
+    .reserva-card {
+        padding: 1.25rem;
+    }
+
+    .reserva-card h3 {
+        font-size: 1.1rem;
+        margin-bottom: 1.25rem;
+        padding-bottom: 0.75rem;
+    }
+
+    .evento-resumen-content h2 {
+        font-size: 1.3rem;
+    }
+
+    .categoria-badge {
+        font-size: 0.8rem;
+        padding: 0.4rem 0.8rem;
+    }
+
+    .info-item {
+        margin-bottom: 1rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .cantidad-control {
+        gap: 0.5rem;
+    }
+
+    .btn-qty {
+        width: 32px;
+        height: 32px;
+        font-size: 0.9rem;
+    }
+
+    #cantidad {
+        font-size: 1rem;
+    }
+
+    .btn-confirmar,
+    .btn-cancelar {
+        padding: 1rem;
+        font-size: 0.95rem;
+    }
+
+    .resumen-precio {
+        padding: 1rem;
+    }
+
+    .precio-row {
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+        padding-bottom: 0.5rem;
+    }
+
+    .user-info-display {
+        padding: 1rem;
+    }
+
+    .user-info-display p {
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+    }
+}

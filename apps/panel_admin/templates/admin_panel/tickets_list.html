@@ -1,0 +1,229 @@
+{% extends 'landing.html' %}
+{% load static %}
+
+{% block title %}Gestión de Tickets{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/tickets_list.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="tickets-container">
+    <!-- Header -->
+    <div class="tickets-header">
+        <div class="header-content">
+            <h1>Gestión de Tickets</h1>
+            <p>Administra y valida las reservas de eventos</p>
+        </div>
+        <a href="{% url 'panel_admin:tickets_estadisticas' %}" class="btn btn-primary">
+            📊 Ver Estadísticas
+        </a>
+    </div>
+
+    <!-- Estadísticas Rápidas -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon" style="color: #3498db;">🎫</div>
+            <div class="stat-content">
+                <div class="stat-value">{{ total_tickets }}</div>
+                <div class="stat-label">Tickets Activos</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="color: #28a745;">✓</div>
+            <div class="stat-content">
+                <div class="stat-value">{{ total_validados }}</div>
+                <div class="stat-label">Validados</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="color: #f39c12;">⏳</div>
+            <div class="stat-content">
+                <div class="stat-value">{{ tickets_pendientes }}</div>
+                <div class="stat-label">Pendientes</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtros y Búsqueda -->
+    <div class="tickets-filter-section">
+        <form method="get" class="filter-form">
+            <div class="filter-group">
+                <input 
+                    type="text" 
+                    name="q" 
+                    placeholder="Buscar por usuario, email, evento, código..."
+                    value="{{ busqueda }}"
+                    class="filter-input"
+                >
+                <button type="submit" class="btn btn-search">🔍 Buscar</button>
+            </div>
+
+            <div class="filter-row">
+                <select name="estado" class="filter-select" onchange="this.form.submit()">
+                    <option value="">Todos los estados</option>
+                    <option value="activo" {% if filtro_estado == 'activo' %}selected{% endif %}>Activos</option>
+                    <option value="cancelado" {% if filtro_estado == 'cancelado' %}selected{% endif %}>Cancelados</option>
+                </select>
+
+                <select name="validado" class="filter-select" onchange="this.form.submit()">
+                    <option value="">Todas las validaciones</option>
+                    <option value="validado" {% if filtro_validado == 'validado' %}selected{% endif %}>Validados</option>
+                    <option value="no_validado" {% if filtro_validado == 'no_validado' %}selected{% endif %}>No Validados</option>
+                </select>
+
+                <select name="evento" class="filter-select" onchange="this.form.submit()">
+                    <option value="">Todos los eventos</option>
+                    {% for evento in eventos %}
+                        <option value="{{ evento.id }}" {% if filtro_evento == evento.id|stringformat:'s' %}selected{% endif %}>
+                            {{ evento.nombre }}
+                        </option>
+                    {% endfor %}
+                </select>
+
+                {% if busqueda or filtro_estado or filtro_validado or filtro_evento %}
+                    <a href="{% url 'panel_admin:tickets_list' %}" class="btn btn-secondary">Limpiar filtros</a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+
+    <!-- Tabla de Tickets -->
+    <div class="tickets-table-wrapper">
+        {% if page.object_list %}
+            <form method="post" action="{% url 'panel_admin:acciones_masivas' %}" class="tickets-form">
+                {% csrf_token %}
+
+                <table class="tickets-table">
+                    <thead>
+                        <tr>
+                            <th>
+                                <input type="checkbox" id="select-all" class="select-all">
+                            </th>
+                            <th>ID</th>
+                            <th>Usuario</th>
+                            <th>Evento</th>
+                            <th>Cantidad</th>
+                            <th>Fecha de Compra</th>
+                            <th>Estado</th>
+                            <th>Validación</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for ticket in page.object_list %}
+                            <tr class="ticket-row">
+                                <td>
+                                    <input type="checkbox" name="ticket_ids" value="{{ ticket.id }}" class="ticket-checkbox">
+                                </td>
+                                <td><strong>#{{ ticket.id }}</strong></td>
+                                <td>
+                                    <a href="{% url 'panel_admin:usuario_detail' ticket.usuario.id %}">
+                                        {{ ticket.usuario.username }}
+                                    </a>
+                                </td>
+                                <td>
+                                    <a href="{% url 'admin:events_evento_change' ticket.evento.id %}">
+                                        {{ ticket.evento.nombre }}
+                                    </a>
+                                </td>
+                                <td class="text-center">{{ ticket.cantidad }}</td>
+                                <td>{{ ticket.fecha_compra|date:"d/m/Y H:i" }}</td>
+                                <td>
+                                    {% if ticket.activo %}
+                                        <span class="badge badge-success">ACTIVO</span>
+                                    {% else %}
+                                        <span class="badge badge-danger">CANCELADO</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if ticket.validado %}
+                                        <span class="badge badge-validated">✓ Validado</span>
+                                    {% else %}
+                                        <span class="badge badge-pending">Pendiente</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{% url 'panel_admin:ticket_detail' ticket.id %}" class="btn btn-sm btn-info">
+                                        Ver
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <!-- Acciones Masivas -->
+                <div class="bulk-actions">
+                    <select name="accion" class="bulk-action-select">
+                        <option value="">-- Seleccionar acción --</option>
+                        <option value="validar">✓ Marcar como Validados</option>
+                        <option value="revertir_validacion">↩ Revertir Validación</option>
+                        <option value="cancelar">✕ Cancelar Tickets</option>
+                        <option value="reactivar">↻ Reactivar Tickets</option>
+                    </select>
+                    <button type="submit" class="btn btn-warning" style="display: none;" id="bulk-action-btn">
+                        Ejecutar Acción
+                    </button>
+                </div>
+            </form>
+
+            <!-- Paginación -->
+            <div class="pagination">
+                {% if page.has_previous %}
+                    <a href="?page=1{{ busqueda|urlencode:'q' }}" class="page-link">Primera</a>
+                    <a href="?page={{ page.previous_page_number }}{{ busqueda|urlencode:'q' }}" class="page-link">Anterior</a>
+                {% endif %}
+
+                <span class="page-info">
+                    Página {{ page.number }} de {{ page.paginator.num_pages }}
+                </span>
+
+                {% if page.has_next %}
+                    <a href="?page={{ page.next_page_number }}{{ busqueda|urlencode:'q' }}" class="page-link">Siguiente</a>
+                    <a href="?page={{ page.paginator.num_pages }}{{ busqueda|urlencode:'q' }}" class="page-link">Última</a>
+                {% endif %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">📭</div>
+                <h3>No hay tickets</h3>
+                <p>No se encontraron tickets que coincidan con tu búsqueda</p>
+                <a href="{% url 'panel_admin:tickets_list' %}" class="btn btn-primary">
+                    Ver todos los tickets
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+// Select All Checkbox
+document.getElementById('select-all').addEventListener('change', function() {
+    const checkboxes = document.querySelectorAll('.ticket-checkbox');
+    checkboxes.forEach(cb => cb.checked = this.checked);
+    updateBulkActions();
+});
+
+// Update bulk actions visibility
+document.querySelectorAll('.ticket-checkbox').forEach(cb => {
+    cb.addEventListener('change', updateBulkActions);
+});
+
+function updateBulkActions() {
+    const checked = document.querySelectorAll('.ticket-checkbox:checked').length;
+    const btn = document.getElementById('bulk-action-btn');
+    btn.style.display = checked > 0 ? 'inline-block' : 'none';
+}
+
+// Handle bulk action submission
+document.querySelector('.bulk-action-select').addEventListener('change', function() {
+    if (this.value && document.querySelectorAll('.ticket-checkbox:checked').length > 0) {
+        if (confirm('¿Estás seguro? Esta acción afectará a los tickets seleccionados.')) {
+            document.querySelector('.tickets-form').submit();
+        }
+    }
+});
+</script>
+
+{% endblock %}
