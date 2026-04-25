@@ -1,0 +1,189 @@
+<style>
+    .organizer-hero {
+        background: linear-gradient(135deg, var(--negro-principal) 0%, var(--negro-suave) 100%);
+        color: var(--blanco);
+        padding: 80px 5%;
+        text-align: center;
+        margin-top: 60px;
+    }
+
+    .organizer-hero h1 {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 15px;
+        color: var(--amarillo-principal);
+    }
+
+    .organizer-hero p {
+        font-size: 1.1rem;
+        color: #ccc;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .organizer-section {
+        background-color: var(--blanco);
+        padding: 60px 5%;
+    }
+
+    .section-container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-bottom: 40px;
+    }
+
+    .btn-create-event {
+        background-color: var(--amarillo-principal);
+        color: var(--negro-principal);
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: 700;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .btn-create-event:hover {
+        background-color: var(--amarillo-hover);
+        transform: translateY(-2px);
+    }
+
+    .organizer-content {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 30px;
+    }
+
+    .organizer-main {
+        background-color: var(--fondo-alterno);
+        border-radius: 12px;
+        padding: 30px;
+        border: 1px solid var(--bordes);
+    }
+
+    .events-list {
+        min-height: 300px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .list-placeholder {
+        color: #888;
+        font-size: 1rem;
+    }
+
+    .organizer-sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .sidebar-card {
+        background-color: var(--blanco);
+        border: 1px solid var(--bordes);
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: var(--shadow);
+    }
+
+    .sidebar-card h3 {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--negro-principal);
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid var(--bordes);
+    }
+
+    .action-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .action-link {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px;
+        background-color: var(--fondo-alterno);
+        border-radius: 8px;
+        text-decoration: none;
+        color: var(--negro-principal);
+        transition: all 0.3s ease;
+    }
+
+    .action-link:hover {
+        background-color: var(--amarillo-suave);
+        color: var(--negro-principal);
+        padding-left: 16px;
+    }
+
+    .action-icon {
+        font-size: 1.2rem;
+    }
+
+    .action-link span:last-child {
+        font-weight: 500;
+    }
+
+    .stats {
+        background: linear-gradient(135deg, rgba(212, 175, 55, 0.05) 0%, rgba(212, 175, 55, 0.02) 100%);
+        border-color: var(--amarillo-principal);
+    }
+
+    .stats-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 0;
+        border-bottom: 1px solid var(--bordes);
+    }
+
+    .stats-item:last-child {
+        border-bottom: none;
+    }
+
+    .stat-label {
+        font-size: 0.9rem;
+        color: #666;
+        font-weight: 500;
+    }
+
+    .stat-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--amarillo-principal);
+    }
+
+    @media (max-width: 768px) {
+        .organizer-content {
+            grid-template-columns: 1fr;
+        }
+
+        .section-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 20px;
+        }
+
+        .btn-create-event {
+            width: 100%;
+        }
+
+        .organizer-hero h1 {
+            font-size: 2rem;
+        }
+    }
+</style>

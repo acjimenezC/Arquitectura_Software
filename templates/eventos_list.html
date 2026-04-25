@@ -1,0 +1,590 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eventos — TICKERFISHER</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        /* ── HERO ───────────────────────────────────────────── */
+        .events-hero {
+            background: linear-gradient(135deg, var(--negro-principal) 0%, var(--negro-suave) 100%);
+            color: var(--blanco);
+            padding: 80px 5%;
+            text-align: center;
+            margin-top: 60px;
+        }
+        .events-hero h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 14px;
+            color: var(--amarillo-principal);
+        }
+        .events-hero p {
+            font-size: 1.1rem;
+            color: #ccc;
+            max-width: 580px;
+            margin: 0 auto 2.5rem;
+        }
+
+        /* ── FILTER BAR ─────────────────────────────────────── */
+        .filter-bar {
+            background: var(--blanco);
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            display: flex;
+            max-width: 900px;
+            margin: 0 auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: flex-end;
+        }
+        .filter-group {
+            flex: 1;
+            min-width: 160px;
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+            padding: 0 1rem;
+            border-right: 1px solid var(--bordes);
+        }
+        .filter-group:last-of-type { border-right: none; }
+        .filter-group label {
+            font-size: 0.72rem;
+            color: #888;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 4px;
+            letter-spacing: 0.5px;
+        }
+        .filter-group input,
+        .filter-group select {
+            border: none;
+            outline: none;
+            padding: 0.4rem 0;
+            font-size: 0.95rem;
+            font-family: inherit;
+            background: transparent;
+            color: var(--negro-principal);
+        }
+        .btn-filter {
+            background-color: var(--amarillo-principal);
+            color: var(--negro-principal);
+            border: none;
+            padding: 0 2rem;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: inherit;
+            font-size: 0.9rem;
+            height: 48px;
+            letter-spacing: 0.5px;
+        }
+        .btn-filter:hover { background-color: var(--amarillo-hover); }
+
+        /* ── PAGE BODY ──────────────────────────────────────── */
+        .events-page {
+            padding: 60px 5%;
+            background-color: var(--blanco);
+        }
+        .events-page-inner {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        /* Results header */
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 40px;
+        }
+        .results-header .title-area h2 { font-size: 2rem; margin-bottom: 8px; }
+        .results-count { font-size: 0.88rem; color: #999; margin-top: 6px; }
+
+        .sort-select {
+            border: 1px solid var(--bordes);
+            border-radius: 8px;
+            padding: 8px 14px;
+            font-family: inherit;
+            font-size: 0.85rem;
+            color: var(--negro-principal);
+            background: var(--blanco);
+            cursor: pointer;
+        }
+        .sort-select:focus { outline: none; border-color: var(--amarillo-principal); }
+
+        /* Active filter chips */
+        .active-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 28px;
+            align-items: center;
+        }
+        .filter-chip {
+            background: var(--amarillo-suave);
+            border: 1px solid var(--amarillo-principal);
+            color: var(--negro-principal);
+            border-radius: 50px;
+            padding: 5px 14px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .filter-chip a {
+            color: var(--negro-principal);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1rem;
+            line-height: 1;
+        }
+        .clear-all {
+            font-size: 0.8rem;
+            color: #999;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        .clear-all:hover { color: var(--negro-principal); }
+
+        /* ── CARDS GRID ─────────────────────────────────────── */
+        .events-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+            gap: 30px;
+        }
+
+        .event-card {
+            background: var(--blanco);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--bordes);
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+        }
+        .event-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.09);
+        }
+
+        /* Gradient banner — cycles through 5 colour pairs by card index */
+        .event-banner {
+            width: 100%;
+            height: 190px;
+            position: relative;
+            flex-shrink: 0;
+            display: flex;
+            align-items: flex-end;
+            padding: 0 0 16px 16px;
+        }
+        .event-banner.g0 { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .event-banner.g1 { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .event-banner.g2 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+        .event-banner.g3 { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+        .event-banner.g4 { background: linear-gradient(135deg, #D4AF37  0%, #C9A227  100%); }
+
+        /* big date stamp overlaid on the banner */
+        .banner-date {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: rgba(0,0,0,0.45);
+            backdrop-filter: blur(4px);
+            border-radius: 10px;
+            padding: 8px 14px;
+            text-align: center;
+            color: #fff;
+            line-height: 1.1;
+        }
+        .banner-date .day   { font-size: 1.8rem; font-weight: 700; display: block; }
+        .banner-date .month { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+
+        .banner-organizer {
+            background: rgba(0,0,0,0.45);
+            backdrop-filter: blur(4px);
+            border-radius: 50px;
+            padding: 4px 12px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: #fff;
+            letter-spacing: 0.3px;
+        }
+
+        /* Card body */
+        .event-content {
+            padding: 1.4rem 1.5rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .event-meta {
+            color: var(--amarillo-principal);
+            font-size: 0.82rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .event-meta .dot { color: #ccc; }
+        .event-title {
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--negro-principal);
+            line-height: 1.35;
+        }
+        .event-location {
+            font-size: 0.82rem;
+            color: #888;
+            margin-bottom: auto;
+            padding-bottom: 14px;
+            display: flex;
+            align-items: flex-start;
+            gap: 5px;
+        }
+        .event-location svg { flex-shrink: 0; margin-top: 2px; }
+
+        .event-description {
+            font-size: 0.82rem;
+            color: #666;
+            margin-bottom: 14px;
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .event-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 14px;
+            border-top: 1px solid var(--bordes);
+            margin-top: auto;
+        }
+        .event-time {
+            font-size: 0.88rem;
+            color: var(--negro-principal);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .event-time svg { color: var(--amarillo-principal); }
+
+        .btn-book {
+            background-color: var(--negro-principal);
+            color: var(--blanco);
+            text-decoration: none;
+            padding: 8px 20px;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            display: inline-block;
+        }
+        .btn-book:hover {
+            background-color: var(--amarillo-principal);
+            color: var(--negro-principal);
+        }
+
+        /* ── EMPTY STATE ────────────────────────────────────── */
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            grid-column: 1 / -1;
+        }
+        .empty-icon { font-size: 4rem; display: block; margin-bottom: 20px; }
+        .empty-state h3 { font-size: 1.5rem; margin-bottom: 10px; }
+        .empty-state p  { color: #888; margin-bottom: 25px; }
+        .btn-clear {
+            background-color: var(--amarillo-principal);
+            color: var(--negro-principal);
+            border: none;
+            padding: 10px 28px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            font-family: inherit;
+            font-size: 0.9rem;
+            transition: var(--transition);
+            display: inline-block;
+        }
+        .btn-clear:hover { background-color: var(--amarillo-hover); }
+
+        /* ── RESPONSIVE ─────────────────────────────────────── */
+        @media (max-width: 768px) {
+            .events-hero h1 { font-size: 2rem; }
+            .filter-bar { flex-direction: column; }
+            .filter-group { border-right: none; border-bottom: 1px solid var(--bordes); padding: 10px 0; }
+            .filter-group:last-of-type { border-bottom: none; }
+            .btn-filter { width: 100%; padding: 14px; }
+            .results-header { flex-direction: column; align-items: flex-start; gap: 14px; }
+            .events-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav>
+        <a href="{% url 'home' %}" class="logo">TICKER<span>FISHER</span></a>
+        <div class="nav-links">
+            <a href="{% url 'events:list' %}" style="color: var(--amarillo-principal);">Explorar Eventos</a>
+            <a href="#">Corporativo</a>
+            <a href="#">Soporte</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'accounts:logout' %}" class="btn-login">Cerrar Sesión</a>
+            {% else %}
+                <a href="{% url 'accounts:login' %}" class="btn-login">Acceso Cliente</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <!-- HERO + SEARCH -->
+    <section class="events-hero">
+        <h1>Todos los Eventos</h1>
+        <p>Descubre y reserva los mejores eventos corporativos, culturales y deportivos.</p>
+
+        <form method="get" action="{% url 'events:list' %}">
+            <div class="filter-bar">
+                <div class="filter-group">
+                    <label>¿Qué buscas?</label>
+                    <input type="text" name="q" value="{{ query }}" placeholder="Nombre, lugar...">
+                </div>
+                <div class="filter-group">
+                    <label>Lugar</label>
+                    <select name="lugar">
+                        <option value="">Cualquier lugar</option>
+                        {% for l in lugares %}
+                            <option value="{{ l }}" {% if l == lugar_seleccionado %}selected{% endif %}>{{ l }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Fecha</label>
+                    <input type="date" name="fecha" value="{{ fecha_seleccionada }}">
+                </div>
+                <button type="submit" class="btn-filter">BUSCAR</button>
+            </div>
+        </form>
+    </section>
+
+    <!-- LISTING -->
+    <section class="events-page">
+        <div class="events-page-inner">
+
+            <!-- Active filter chips -->
+            {% if query or lugar_seleccionado or fecha_seleccionada %}
+            <div class="active-filters">
+                {% if query %}
+                <span class="filter-chip">
+                    "{{ query }}"
+                    <a href="?{% if lugar_seleccionado %}lugar={{ lugar_seleccionado }}&{% endif %}{% if fecha_seleccionada %}fecha={{ fecha_seleccionada }}{% endif %}">&times;</a>
+                </span>
+                {% endif %}
+                {% if lugar_seleccionado %}
+                <span class="filter-chip">
+                    {{ lugar_seleccionado }}
+                    <a href="?{% if query %}q={{ query }}&{% endif %}{% if fecha_seleccionada %}fecha={{ fecha_seleccionada }}{% endif %}">&times;</a>
+                </span>
+                {% endif %}
+                {% if fecha_seleccionada %}
+                <span class="filter-chip">
+                    {{ fecha_seleccionada }}
+                    <a href="?{% if query %}q={{ query }}&{% endif %}{% if lugar_seleccionado %}lugar={{ lugar_seleccionado }}{% endif %}">&times;</a>
+                </span>
+                {% endif %}
+                <a href="{% url 'events:list' %}" class="clear-all">Limpiar filtros</a>
+            </div>
+            {% endif %}
+
+            <!-- Header row -->
+            <div class="results-header">
+                <div class="title-area">
+                    <h2>
+                        {% if query or lugar_seleccionado or fecha_seleccionada %}
+                            Resultados de búsqueda
+                        {% else %}
+                            Eventos Disponibles
+                        {% endif %}
+                    </h2>
+                    <div class="underline"></div>
+                    <p class="results-count">
+                        {{ total_eventos }} evento{{ total_eventos|pluralize }} encontrado{{ total_eventos|pluralize }}
+                    </p>
+                </div>
+                <select class="sort-select" id="sortSelect">
+                    <option value="fecha_asc">Ordenar por fecha ↑</option>
+                    <option value="fecha_desc">Fecha ↓</option>
+                    <option value="nombre_asc">Nombre A–Z</option>
+                    <option value="nombre_desc">Nombre Z–A</option>
+                </select>
+            </div>
+
+            <!-- Cards -->
+            <div class="events-grid" id="eventsGrid">
+                {% for evento in eventos %}
+                <div class="event-card"
+                     data-fecha="{{ evento.fecha|date:'Y-m-d' }}"
+                     data-nombre="{{ evento.nombre }}">
+
+                    <!-- Colour banner — rotates through 5 gradients -->
+                    <div class="event-banner g{{ forloop.counter0|divisibleby:5|yesno:'0,,' }}{% cycle 'g0' 'g1' 'g2' 'g3' 'g4' %}">
+                        <!-- Date stamp -->
+                        <div class="banner-date">
+                            <span class="day">{{ evento.fecha|date:"d" }}</span>
+                            <span class="month">{{ evento.fecha|date:"M Y" }}</span>
+                        </div>
+                        <!-- Organizer pill -->
+                        <span class="banner-organizer">
+                            por {{ evento.organizador.get_full_name|default:evento.organizador.username }}
+                        </span>
+                    </div>
+
+                    <div class="event-content">
+                        <!-- Date + time line -->
+                        <p class="event-meta">
+                            {{ evento.fecha|date:"l, d \d\e F" }}
+                            <span class="dot">•</span>
+                            {{ evento.hora|time:"H:i" }}
+                        </p>
+
+                        <h3 class="event-title">{{ evento.nombre }}</h3>
+
+                        <p class="event-location">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                                 stroke="currentColor" stroke-width="2.5">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                                <circle cx="12" cy="10" r="3"/>
+                            </svg>
+                            {{ evento.lugar }}
+                        </p>
+
+                        {% if evento.descripcion %}
+                        <p class="event-description">{{ evento.descripcion }}</p>
+                        {% endif %}
+
+                        <div class="event-footer">
+                            <span class="event-time">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                     stroke="currentColor" stroke-width="2.5">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <polyline points="12 6 12 12 16 14"/>
+                                </svg>
+                                {{ evento.hora|time:"H:i" }} hs
+                            </span>
+                            <a href="{% url 'events:detail' evento.pk %}" class="btn-book">Ver detalle</a>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="empty-state">
+                    <span class="empty-icon">🎟️</span>
+                    <h3>No hay eventos disponibles</h3>
+                    <p>Intenta con otros filtros o vuelve pronto para nuevas fechas.</p>
+                    <a href="{% url 'events:list' %}" class="btn-clear">Ver todos los eventos</a>
+                </div>
+                {% endfor %}
+            </div>
+
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <a href="{% url 'home' %}" class="logo">TICKER<span>FISHER</span></a>
+                <p>Plataforma líder en gestión de reservas y ticketing de alto nivel para el sector corporativo y privado.</p>
+            </div>
+            <div class="footer-links">
+                <h4>Navegación</h4>
+                <ul>
+                    <li><a href="{% url 'home' %}">Inicio</a></li>
+                    <li><a href="{% url 'events:list' %}">Calendario</a></li>
+                    <li><a href="#">Precios</a></li>
+                    <li><a href="#">Ayuda</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Legal</h4>
+                <ul>
+                    <li><a href="#">Términos y Condiciones</a></li>
+                    <li><a href="#">Privacidad</a></li>
+                    <li><a href="#">Política de Reembolso</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Contacto</h4>
+                <ul>
+                    <li><a href="mailto:ventas@tickerfisher.com">ventas@tickerfisher.com</a></li>
+                    <li><a href="tel:+34900123456">+34 900 123 456</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="copy">
+            &copy; 2026 TICKERFISHER International. Todos los derechos reservados.
+        </div>
+    </footer>
+
+    <script src="{% static 'js/script.js' %}"></script>
+    <script>
+        // Client-side sort
+        document.getElementById('sortSelect').addEventListener('change', function () {
+            const grid = document.getElementById('eventsGrid');
+            const cards = Array.from(grid.querySelectorAll('.event-card'));
+
+            cards.sort((a, b) => {
+                switch (this.value) {
+                    case 'fecha_asc':
+                        return a.dataset.fecha.localeCompare(b.dataset.fecha);
+                    case 'fecha_desc':
+                        return b.dataset.fecha.localeCompare(a.dataset.fecha);
+                    case 'nombre_asc':
+                        return a.dataset.nombre.localeCompare(b.dataset.nombre, 'es');
+                    case 'nombre_desc':
+                        return b.dataset.nombre.localeCompare(a.dataset.nombre, 'es');
+                    default:
+                        return 0;
+                }
+            });
+            cards.forEach(c => grid.appendChild(c));
+        });
+
+        // Staggered fade-in on scroll
+        if ('IntersectionObserver' in window) {
+            const obs = new IntersectionObserver((entries) => {
+                entries.forEach(e => {
+                    if (e.isIntersecting) {
+                        e.target.style.opacity = '1';
+                        e.target.style.transform = 'translateY(0)';
+                        obs.unobserve(e.target);
+                    }
+                });
+            }, { threshold: 0.08 });
+
+            document.querySelectorAll('.event-card').forEach((card, i) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(22px)';
+                card.style.transition = `opacity 0.4s ease ${i * 0.06}s, transform 0.4s ease ${i * 0.06}s`;
+                obs.observe(card);
+            });
+        }
+    </script>
+</body>
+</html>

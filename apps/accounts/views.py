@@ -3,6 +3,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.utils import timezone
+from django.urls import reverse
 from .forms import LoginForm, RegistroForm
 
 
@@ -19,7 +20,14 @@ def login_view(request):
             user.ultimo_acceso = timezone.now()
             user.save()
             messages.success(request, f'¡Bienvenido {user.get_full_name()}!')
-            return redirect('home')
+            
+            # Redirigir según el rol del usuario
+            if user.rol and user.rol.nombre == 'organizador':
+                return redirect('organizer:events')
+            elif user.rol and user.rol.nombre == 'usuario':
+                return redirect('end_user:eventos')
+            else:
+                return redirect('home')
         else:
             messages.error(request, 'Usuario o contraseña incorrectos.')
     else:

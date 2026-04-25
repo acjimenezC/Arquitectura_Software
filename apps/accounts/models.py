@@ -10,6 +10,17 @@ class Rol(models.Model):
     activo = models.BooleanField(default=True)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     
+    ######### feedback
+    def tiene_permiso(self, permiso):
+        """Verifica si el rol tiene un permiso específico"""
+        return self.permisos.get(permiso, False)
+    
+    def agregar_permiso(self, permiso):
+        """Agrega un permiso al rol"""
+        self.permisos[permiso] = True
+        self.save(update_fields=['permisos'])
+    ######### feedbacks
+    
     class Meta:
         verbose_name = 'Rol'
         verbose_name_plural = 'Roles'

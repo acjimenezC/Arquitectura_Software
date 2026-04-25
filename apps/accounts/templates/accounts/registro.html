@@ -1,100 +1,169 @@
-{% extends 'base.html' %}
+{% extends 'landing.html' %}
+{% load static %}
 
-{% block title %}Registro{% endblock %}
+{% block title %}Crear Cuenta - TICKERFISHER{% endblock %}
 
 {% block content %}
-<style>
-    input:focus, textarea:focus, select:focus {
-        border-color: #ebc01f !important;
-        box-shadow: 0 0 0 0.2rem rgba(235, 192, 31, 0.25) !important;
-    }
-</style>
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-7">
-            <div class="card shadow">
-                <div class="card-body p-5">
-                    <h2 class="text-center mb-4">Crear Nueva Cuenta</h2>
+<section class="register-hero">
+    <h1>Únete a TICKERFISHER</h1>
+    <p>Acceso exclusivo a los mejores eventos corporativos, culturales y deportivos</p>
+</section>
+
+<section class="register-section">
+    <div class="register-container">
+        <div class="register-card">
+            <h2>Crear Nueva Cuenta</h2>
+            
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert-message alert-{{ message.tags }}">
+                        <span>{{ message }}</span>
+                        <button type="button" class="alert-close">&times;</button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="post" class="register-form">
+                {% csrf_token %}
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="{{ form.first_name.id_for_label }}">Nombre</label>
+                        {{ form.first_name }}
+                        {% if form.first_name.errors %}
+                            <span class="error-text">{{ form.first_name.errors.0 }}</span>
+                        {% endif %}
+                    </div>
                     
-                    {% if messages %}
-                        {% for message in messages %}
-                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
-                                {{ message }}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    <div class="form-group">
+                        <label for="{{ form.last_name.id_for_label }}">Apellido</label>
+                        {{ form.last_name }}
+                        {% if form.last_name.errors %}
+                            <span class="error-text">{{ form.last_name.errors.0 }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.email.id_for_label }}">Correo Electrónico</label>
+                    {{ form.email }}
+                    {% if form.email.errors %}
+                        <span class="error-text">{{ form.email.errors.0 }}</span>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.username.id_for_label }}">
+                        <strong>Tu Nombre de Usuario</strong>
+                        <small>(Elige uno único y personalizado)</small>
+                    </label>
+                    {{ form.username }}
+                    {% if form.username.errors %}
+                        <span class="error-text">{{ form.username.errors.0 }}</span>
+                    {% endif %}
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="{{ form.password1.id_for_label }}">Contraseña</label>
+                        {{ form.password1 }}
+                        {% if form.password1.errors %}
+                            <span class="error-text">{{ form.password1.errors.0 }}</span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.password2.id_for_label }}">Confirmar Contraseña</label>
+                        {{ form.password2 }}
+                        {% if form.password2.errors %}
+                            <span class="error-text">{{ form.password2.errors.0 }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="form-group role-selection">
+                    <label>Selecciona tu Tipo de Cuenta</label>
+
+                    <div class="role-options">
+                        {% for radio in form.rol %}
+                            <div class="role-card" data-value="{{ radio.data.value }}">
+                                {{ radio.tag }}
+
+                                <div class="role-content">
+                                    <strong class="role-title">
+                                        {{ radio.choice_label|upper }}
+                                    </strong>
+
+                                    <small class="role-desc">
+                                        {% if radio.choice_label == 'usuario' %}
+                                            Asistente a eventos
+                                        {% elif radio.choice_label == 'organizador' %}
+                                            Organizador de eventos
+                                        {% endif %}
+                                    </small>
+                                </div>
                             </div>
                         {% endfor %}
+                    </div>
+
+                    {% if form.rol.errors %}
+                        <span class="error-text">{{ form.rol.errors.0 }}</span>
                     {% endif %}
-                    
-                    <form method="post">
-                        {% csrf_token %}
-                        
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="{{ form.first_name.id_for_label }}" class="form-label">Nombre</label>
-                                {{ form.first_name }}
-                                {% if form.first_name.errors %}<div class="text-danger">{{ form.first_name.errors }}</div>{% endif %}
-                            </div>
-                            
-                            <div class="col-md-6 mb-3">
-                                <label for="{{ form.last_name.id_for_label }}" class="form-label">Apellido</label>
-                                {{ form.last_name }}
-                                {% if form.last_name.errors %}<div class="text-danger">{{ form.last_name.errors }}</div>{% endif %}
-                            </div>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label for="{{ form.username.id_for_label }}" class="form-label">Usuario</label>
-                            {{ form.username }}
-                            {% if form.username.errors %}<div class="text-danger">{{ form.username.errors }}</div>{% endif %}
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label for="{{ form.email.id_for_label }}" class="form-label">Correo Electrónico</label>
-                            {{ form.email }}
-                            {% if form.email.errors %}<div class="text-danger">{{ form.email.errors }}</div>{% endif %}
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label for="{{ form.password1.id_for_label }}" class="form-label">Contraseña</label>
-                            {{ form.password1 }}
-                            {% if form.password1.errors %}<div class="text-danger">{{ form.password1.errors }}</div>{% endif %}
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label for="{{ form.password2.id_for_label }}" class="form-label">Confirmar Contraseña</label>
-                            {{ form.password2 }}
-                            {% if form.password2.errors %}<div class="text-danger">{{ form.password2.errors }}</div>{% endif %}
-                        </div>
-                        
-                        <div class="mb-4 p-3 border rounded bg-light">
-                            <label class="form-label fw-bold mb-3">{{ form.rol.label }}</label>
-                            <div class="d-flex gap-4">
-                                {% for radio in form.rol %}
-                                    <div class="form-check">
-                                        {{ radio.tag }}
-                                        <label class="form-check-label" for="{{ radio.id_for_label }}">
-                                            <strong>{{ radio.choice_label }}</strong>
-                                            <small class=\"d-block\" style=\"color: #666666;\">
-                                                {% if radio.choice_label == 'usuario' %}
-                                                    Asistente a eventos
-                                                {% elif radio.choice_label == 'organizador' %}
-                                                    Organizador de eventos
-                                                {% endif %}
-                                            </small>
-                                        </label>
-                                    </div>
-                                {% endfor %}
-                            </div>
-                            {% if form.rol.errors %}<div class="text-danger mt-2">{{ form.rol.errors }}</div>{% endif %}
-                        </div>
-                        
-                        <button type="submit" class="btn btn-primary w-100 mb-3">Registrarse</button>
-                    </form>
-                    
-                    <p class="text-center">¿Ya tienes cuenta? <a href="{% url 'accounts:login' %}" style="color: #ebc01f; font-weight: bold; text-decoration: none;">Inicia sesión aquí</a></p>
                 </div>
-            </div>
+
+                <button type="submit" class="btn-register">CREAR CUENTA</button>
+            </form>
+
+            <h3>Beneficios Exclusivos</h3>
+            <ul class="benefits-list">
+                <li>
+                    <span class="benefit-icon">✓</span>
+                    <div>
+                        <strong>Acceso Premium</strong>
+                        <p>Primero en venta de entradas a eventos exclusivos</p>
+                    </div>
+                </li>
+                <li>
+                    <span class="benefit-icon">✓</span>
+                    <div>
+                        <strong>Historial Seguro</strong>
+                        <p>Gestiona todas tus reservas en un solo lugar</p>
+                    </div>
+                </li>
+                <li>
+                    <span class="benefit-icon">✓</span>
+                    <div>
+                        <strong>Soporte 24/7</strong>
+                        <p>Equipo de atención disponible en cualquier momento</p>
+                    </div>
+                </li>
+                <li>
+                    <span class="benefit-icon">✓</span>
+                    <div>
+                        <strong>Ofertas Especiales</strong>
+                        <p>Descuentos exclusivos para miembros registrados</p>
+                    </div>
+                </li>
+            </ul>
         </div>
     </div>
-</div>
+</section>
+
+{% block extra_js %}
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const roleCards = document.querySelectorAll(".role-card");
+
+        roleCards.forEach(card => {
+            card.addEventListener("click", function() {
+                const radio = this.querySelector("input[type='radio']");
+                radio.checked = true;
+
+                roleCards.forEach(c => c.classList.remove("selected"));
+                this.classList.add("selected");
+            });
+        });
+    });
+</script>
+{% endblock %}
 {% endblock %}

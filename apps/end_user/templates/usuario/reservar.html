@@ -1,22 +1,289 @@
-{% extends 'base.html' %}
-
-{% block title %}Reservar{% endblock %}
-
+{% extends 'landing.html' %}
+{% load static %}
+ 
+{% block title %}Reservar - {{ evento.nombre }}{% endblock %}
+ 
 {% block content %}
-<div class="container mt-4">
-	<h2>Reservar Ticket</h2>
-	<div class="card mt-3">
-		<div class="card-body">
-			<p style="color: #666666;">Formulario de reserva (plantilla de ejemplo).</p>
-			<form method="post">
-				{% csrf_token %}
-				<div class="mb-3">
-					<label class="form-label">Número de entradas</label>
-					<input class="form-control" type="number" name="cantidad" min="1" value="1">
-				</div>
-				<button class="btn btn-primary">Reservar</button>
-			</form>
-		</div>
-	</div>
-</div>
+<style>
+    input:focus, textarea:focus, select:focus {
+        border-color: var(--amarillo-principal) !important;
+        box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15) !important;
+    }
+ 
+    .reservar-section {
+        background-color: var(--fondo-alterno);
+        min-height: calc(100vh - 60px);
+        padding: 60px 5%;
+        margin-top: 60px;
+    }
+ 
+    .reservar-card {
+        max-width: 680px;
+        margin: 0 auto;
+        background: var(--blanco);
+        border: 1px solid var(--bordes);
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: var(--shadow);
+    }
+ 
+    /* Coloured banner at the top, same gradient style as event cards */
+    .reservar-banner {
+        background: linear-gradient(135deg, var(--negro-principal) 0%, var(--negro-suave) 100%);
+        padding: 36px 40px;
+    }
+ 
+    .reservar-banner .event-tag {
+        display: inline-block;
+        background: var(--amarillo-principal);
+        color: var(--negro-principal);
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        padding: 4px 14px;
+        border-radius: 50px;
+        margin-bottom: 14px;
+    }
+ 
+    .reservar-banner h2 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--blanco);
+        margin-bottom: 6px;
+        line-height: 1.3;
+    }
+ 
+    .reservar-banner p {
+        font-size: 0.88rem;
+        color: #bbb;
+        margin: 0;
+        line-height: 1.5;
+    }
+ 
+    /* Info rows — same label | value grid as crear_evento */
+    .reservar-body {
+        padding: 36px 40px;
+    }
+ 
+    .info-grid {
+        display: grid;
+        grid-template-columns: 140px 1fr;
+        gap: 0;
+        margin-bottom: 32px;
+    }
+ 
+    .info-row {
+        display: contents;
+    }
+ 
+    .info-row .info-label {
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: #999;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 14px 20px 14px 0;
+        border-bottom: 1px solid var(--bordes);
+        display: flex;
+        align-items: center;
+    }
+ 
+    .info-row .info-value {
+        font-size: 0.92rem;
+        color: var(--negro-principal);
+        font-weight: 500;
+        padding: 14px 0;
+        border-bottom: 1px solid var(--bordes);
+        display: flex;
+        align-items: center;
+    }
+ 
+    .info-row:last-child .info-label,
+    .info-row:last-child .info-value {
+        border-bottom: none;
+    }
+ 
+    .disponibles-count {
+        background: var(--amarillo-suave);
+        color: var(--negro-principal);
+        font-weight: 700;
+        padding: 3px 12px;
+        border-radius: 50px;
+        font-size: 0.88rem;
+    }
+ 
+    .disponibles-count.agotado {
+        background: #fdf0f0;
+        color: #e74c3c;
+    }
+ 
+    /* Booking form */
+    .booking-form {
+        border-top: 1px solid var(--bordes);
+        padding-top: 28px;
+        margin-top: 4px;
+    }
+ 
+    .booking-form .field-grid {
+        display: grid;
+        grid-template-columns: 140px 1fr;
+        align-items: center;
+        gap: 0;
+        margin-bottom: 24px;
+    }
+ 
+    .booking-form label {
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: var(--negro-principal);
+        letter-spacing: 0.3px;
+    }
+ 
+    .booking-form input[type="number"] {
+        width: 100%;
+        padding: 10px 14px;
+        border: 1px solid var(--bordes);
+        border-radius: 8px;
+        font-family: 'Poppins', sans-serif;
+        font-size: 0.9rem;
+        background-color: var(--blanco);
+        color: var(--negro-principal);
+        transition: var(--transition);
+    }
+ 
+    .form-actions {
+        display: flex;
+        gap: 14px;
+        align-items: center;
+    }
+ 
+    .btn-reservar {
+        background-color: var(--amarillo-principal);
+        color: var(--negro-principal);
+        border: none;
+        padding: 12px 32px;
+        border-radius: 8px;
+        font-family: 'Poppins', sans-serif;
+        font-size: 0.9rem;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+    .btn-reservar:hover {
+        background-color: var(--amarillo-hover);
+        box-shadow: 0 6px 20px rgba(212, 175, 55, 0.3);
+        transform: translateY(-1px);
+    }
+    .btn-reservar:active { transform: translateY(0); }
+ 
+    .btn-volver {
+        color: #888;
+        text-decoration: none;
+        font-size: 0.88rem;
+        font-weight: 500;
+        transition: var(--transition);
+    }
+    .btn-volver:hover { color: var(--negro-principal); }
+ 
+    /* Agotado state */
+    .agotado-notice {
+        background: #fdf0f0;
+        border: 1px solid #f5c6cb;
+        border-radius: 8px;
+        padding: 16px 20px;
+        color: #e74c3c;
+        font-size: 0.9rem;
+        font-weight: 600;
+        text-align: center;
+        margin-top: 28px;
+    }
+ 
+    @media (max-width: 640px) {
+        .reservar-banner { padding: 28px 24px; }
+        .reservar-body   { padding: 28px 24px; }
+        .info-grid,
+        .booking-form .field-grid { grid-template-columns: 1fr; }
+        .info-row .info-label { border-bottom: none; padding-bottom: 2px; }
+        .booking-form label { margin-bottom: 6px; display: block; }
+    }
+</style>
+ 
+<section class="reservar-section">
+    <div class="reservar-card">
+ 
+        <!-- Banner -->
+        <div class="reservar-banner">
+            <span class="event-tag">Reserva de Ticket</span>
+            <h2>{{ evento.nombre }}</h2>
+            {% if evento.descripcion %}
+            <p>{{ evento.descripcion }}</p>
+            {% endif %}
+        </div>
+ 
+        <!-- Body -->
+        <div class="reservar-body">
+ 
+            <!-- Event info rows -->
+            <div class="info-grid">
+                <div class="info-row">
+                    <span class="info-label">Lugar</span>
+                    <span class="info-value">{{ evento.lugar }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Fecha</span>
+                    <span class="info-value">{{ evento.fecha|date:"l, d \d\e F \d\e Y" }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Hora</span>
+                    <span class="info-value">{{ evento.hora|time:"H:i" }} hs</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Precio</span>
+                    <span class="info-value">
+                        {% if evento.precio == 0 %}Gratis{% else %}${{ evento.precio }} USD{% endif %}
+                    </span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Disponibles</span>
+                    <span class="info-value">
+                        <span class="disponibles-count {% if disponibles == 0 %}agotado{% endif %}">
+                            {% if disponibles == 0 %}Agotado{% else %}{{ disponibles }} lugar{{ disponibles|pluralize:"es" }}{% endif %}
+                        </span>
+                    </span>
+                </div>
+            </div>
+ 
+            <!-- Booking form or sold-out notice -->
+            {% if disponibles > 0 %}
+            <div class="booking-form">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="field-grid">
+                        <label for="cantidad">Número de entradas</label>
+                        <input type="number" id="cantidad" name="cantidad"
+                               min="1" max="{{ disponibles }}" value="1">
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-reservar">Confirmar Reserva</button>
+                        <a href="{% url 'end_user:eventos' %}" class="btn-volver">← Volver a Eventos</a>
+                    </div>
+                </form>
+            </div>
+            {% else %}
+            <div class="agotado-notice">
+                No hay tickets disponibles para este evento.
+            </div>
+            <div style="margin-top: 20px;">
+                <a href="{% url 'end_user:eventos' %}" class="btn-volver">← Volver a Eventos</a>
+            </div>
+            {% endif %}
+ 
+        </div>
+    </div>
+</section>
+ 
 {% endblock %}
+ 

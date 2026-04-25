@@ -1,3 +1,4 @@
+from django.http import HttpResponseForbidden
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -10,6 +11,12 @@ from .forms import EventoForm
 @require_rols('organizador', 'admin')
 def crear_evento_view(request):
     """Vista para crear eventos - solo organizadores y admin"""
+    
+    ######### feedback
+    if not request.user.rol.tiene_permiso('crear_eventos'):
+        return HttpResponseForbidden('No tienes permiso para crear eventos')
+    ######### feedback
+    
     if request.method == 'POST':
         form = EventoForm(request.POST)
         if form.is_valid():

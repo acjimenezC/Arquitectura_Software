@@ -1,19 +1,56 @@
-{% extends 'base.html' %}
+{% extends 'landing.html' %}
 
 {% block title %}Mis Eventos{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
+<div class="container mt-5" style="margin-bottom: 750px; margin-top: 50px; margin-left: 50px;">
     <div class="row mb-4">
-        <div class="col-md-8">
+        <div class="col-md-8" style="margin-bottom: 20px;">
             <h2>Mis Eventos</h2>
         </div>
-        <div class="col-md-4 text-end">
-            <a href="{% url 'events:crear' %}" class="btn btn-primary">+ Crear Nuevo Evento</a>
-        </div>
     </div>
+
+
+    {% for evento in eventos %}
+                <div class="event-card" style="width: 300px; margin-bottom: 30px; display: inline-block; vertical-align: top; margin-right: 20px;">
+                    <div class="event-img" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                        <span class="category-tag">Evento</span>
+                    </div>
+                    <div class="event-content">
+                        <p class="event-date">{{ evento.fecha }}</p>
+                        <h3 class="event-title">{{ evento.nombre }}</h3>
+                        <div class="event-footer">
+                            <span class="price">{{ evento.precio}}</span>
+                            <a href="{% url 'end_user:reservar' evento.id %}" class="btn-book">Reservar</a>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="col-12">
+                    <div class="alert-message">
+                        <span>No hay eventos disponibles actualmente. Vuelve pronto para ver nuevas opciones.</span>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        {% if not eventos %}
+            <div class="empty-state">
+                <h3>Próximamente</h3>
+                <p>Estamos preparando los mejores eventos para ti.</p>
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
+
+<div class="col-md-4 text-end">
+    <a href="{% url 'events:crear_evento' %}" class="btn-search" style="color: white; padding: 5px 5px; text-decoration: none; border-radius: 5px; margin: 10px auto;">
+        + Crear Nuevo Evento
+    </a>
+</div>
     
-    {% if messages %}
+    {% comment %} {% if messages %}
         {% for message in messages %}
             <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
                 {{ message }}
@@ -59,4 +96,4 @@
         </div>
     {% endif %}
 </div>
-{% endblock %}
+{% endblock %} {% endcomment %}

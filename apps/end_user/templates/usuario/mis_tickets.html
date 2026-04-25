@@ -1,28 +1,46 @@
-{% extends 'base.html' %}
+{% extends 'landing.html' %}
+{% load static %}
 
 {% block title %}Mis Tickets{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-	<h2>Mis Tickets</h2>
-	<div class="card mt-3">
-		<div class="card-body">
-			{% if tickets %}
-				<ul class="list-group">
-					{% for t in tickets %}
-						<li class="list-group-item d-flex justify-content-between align-items-center">
-							<div>
-								<strong>{{ t.evento }}</strong><br>
-								<small style="color: #666666;">Comprado: {{ t.fecha_compra }}</small>
-							</div>
-							<span class="badge bg-primary rounded-pill">{{ t.cantidad }}</span>
-						</li>
-					{% endfor %}
-				</ul>
+<div style="margin-bottom: 10%">
+	<h2 style="margin-top: 20px; text-align: center;">Mis Tickets</h2>
+
+	<div class="ticket-body">
+		{% if tickets %}
+			<ul class="ticket-list">
+				{% for t in tickets %}
+					<li class="ticket-card">
+						<div>
+							<strong class="ticket-tittle">{{ t.evento }}</strong><br>
+							<small class="ticket-date">Comprado: {{ t.fecha_compra }}</small>
+						</div>
+						<span class="badge bg-primary rounded-pill">{{ t.cantidad }}</span>
+					</li>
+				{% endfor %}
+			</ul>
 			{% else %}
-				<div class="alert alert-info">No tienes tickets comprados.</div>
-			{% endif %}
-		</div>
+			<div class="alert alert-info" style="margin-bottom: 750px; text-align: center;">
+				No tienes tickets comprados.
+			</div>
+			<div class="empty-state" style="margin-top: 50px; margin-bottom: 50px; text-align: center;">
+				<h3>¡Explora nuestros eventos!</h3>
+				<p>Reserva tus entradas para los próximos eventos exclusivos.</p>
+				<a href="{% url 'end_user:eventos' %}" class="btn-search" style="color: white; padding: 5px 5px; text-decoration: none; border-radius: 5px; margin: 10px auto;">
+					Ver Eventos
+				</a>
+				<p>O crea tus propios eventos.</p>
+				<a href="{% url 'events:crear_evento' %}" class="btn-search" style="color: white; padding: 5px 5px; text-decoration: none; border-radius: 5px; margin: 10px;">
+					Crear Evento
+				</a>
+				<div class="empty-state">
+					{% endif %}
+				</div>
+
+			<div style="margin-left: 15%; margin-top: 25px;">
+				<a href="{% url 'end_user:eventos' %}" class="btn-volver">← Volver a Eventos</a>
+			</div>
 	</div>
-</div>
+
 {% endblock %}

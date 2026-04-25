@@ -1,71 +1,112 @@
-{% extends 'base.html' %}
+{% extends 'landing.html' %}
+{% load static %}
 
 {% block title %}Crear Evento{% endblock %}
 
 {% block content %}
 <style>
     input:focus, textarea:focus, select:focus {
-        border-color: #ebc01f !important;
-        box-shadow: 0 0 0 0.2rem rgba(235, 192, 31, 0.25) !important;
+        border-color: var(--amarillo-principal) !important;
+        box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15) !important;
     }
 </style>
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-7">
-            <div class="card shadow">
-                <div class="card-body p-5">
-                    <h2 class="text-center mb-4">Crear Nuevo Evento</h2>
-                    
-                    {% if messages %}
-                        {% for message in messages %}
-                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
-                                {{ message }}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                            </div>
-                        {% endfor %}
-                    {% endif %}
-                    
-                    <form method="post">
-                        {% csrf_token %}
-                        
-                        <div class="mb-3">
-                            <label for="{{ form.nombre.id_for_label }}" class="form-label">Nombre del Evento</label>
-                            {{ form.nombre }}
-                            {% if form.nombre.errors %}<div class="text-danger">{{ form.nombre.errors }}</div>{% endif %}
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label for="{{ form.lugar.id_for_label }}" class="form-label">Lugar</label>
-                            {{ form.lugar }}
-                            {% if form.lugar.errors %}<div class="text-danger">{{ form.lugar.errors }}</div>{% endif %}
-                        </div>
-                        
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="{{ form.fecha.id_for_label }}" class="form-label">Fecha</label>
-                                {{ form.fecha }}
-                                {% if form.fecha.errors %}<div class="text-danger">{{ form.fecha.errors }}</div>{% endif %}
-                            </div>
-                            
-                            <div class="col-md-6 mb-3">
-                                <label for="{{ form.hora.id_for_label }}" class="form-label">Hora</label>
-                                {{ form.hora }}
-                                {% if form.hora.errors %}<div class="text-danger">{{ form.hora.errors }}</div>{% endif %}
-                            </div>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label for="{{ form.descripcion.id_for_label }}" class="form-label">Descripción (Opcional)</label>
-                            {{ form.descripcion }}
-                            {% if form.descripcion.errors %}<div class="text-danger">{{ form.descripcion.errors }}</div>{% endif %}
-                        </div>
-                        
-                        <button type="submit" class="btn btn-primary w-100 mb-3">Crear Evento</button>
-                        <a href="{% url 'events:mis_eventos' %}" class="btn btn-secondary w-100">Volver a Mis Eventos</a>
-                    </form>
-                </div>
+
+<section class="crear-evento-section">
+    <div class="crear-evento-card">
+ 
+        <h2>Crear Nuevo Evento</h2>
+        <p class="card-subtitle">Completa los campos para publicar tu evento en la plataforma.</p>
+ 
+        {% if messages %}
+            {% for message in messages %}
+            <div class="alert-message {% if message.tags == 'error' %}alert-error{% endif %}">
+                <span>{{ message }}</span>
+                <button onclick="this.parentElement.remove()" style="background:none;border:none;font-size:1.2rem;cursor:pointer;color:inherit;">&times;</button>
             </div>
-        </div>
+            {% endfor %}
+        {% endif %}
+ 
+        <form method="post">
+            {% csrf_token %}
+ 
+            <div class="field-grid">
+ 
+                <!-- Nombre -->
+                <div class="field-row">
+                    <label for="{{ form.nombre.id_for_label }}">Nombre del Evento</label>
+                    <div class="field-input-wrap">
+                        {{ form.nombre }}
+                        {% if form.nombre.errors %}<span class="field-error">{{ form.nombre.errors|join:", " }}</span>{% endif %}
+                    </div>
+                </div>
+ 
+                <!-- Lugar -->
+                <div class="field-row">
+                    <label for="{{ form.lugar.id_for_label }}">Lugar</label>
+                    <div class="field-input-wrap">
+                        {{ form.lugar }}
+                        {% if form.lugar.errors %}<span class="field-error">{{ form.lugar.errors|join:", " }}</span>{% endif %}
+                    </div>
+                </div>
+ 
+                <!-- Fecha + Hora -->
+                <div class="field-row">
+                    <label>Fecha y Hora</label>
+                    <div class="field-input-wrap">
+                        <div class="input-pair">
+                            <div class="input-pair-label">
+                                <span>Fecha</span>
+                                {{ form.fecha }}
+                                {% if form.fecha.errors %}<span class="field-error">{{ form.fecha.errors|join:", " }}</span>{% endif %}
+                            </div>
+                            <div class="input-pair-label">
+                                <span>Hora</span>
+                                {{ form.hora }}
+                                {% if form.hora.errors %}<span class="field-error">{{ form.hora.errors|join:", " }}</span>{% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+ 
+                <!-- Precio + Capacidad -->
+                <div class="field-row">
+                    <div class="field-input-wrap", style="margin-right: 20px;">
+                        <label>Precio</label>
+                        <div class="input-pair-label">
+                            <span>Precio por Ticket</span>
+                            {{ form.precio }}
+                            {% if form.precio.errors %}<span class="field-error">{{ form.precio.errors|join:", " }}</span>{% endif %}
+                        </div>
+                    </div>
+                    <div class="field-input-wrap">
+                            <label>Capacidad</label>
+                            <div class="input-pair-label">
+                                <span>Capacidad Máxima</span>
+                                {{ form.capacidad }}
+                                {% if form.capacidad.errors %}<span class="field-error">{{ form.capacidad.errors|join:", " }}</span>{% endif %}
+                            </div>
+                        </div>
+                    </div>
+                
+ 
+                <!-- Descripción -->
+                <div class="field-row">
+                    <label for="{{ form.descripcion.id_for_label }}">Descripción</label>
+                    <div class="field-input-wrap">
+                        {{ form.descripcion }}
+                        {% if form.descripcion.errors %}<span class="field-error">{{ form.descripcion.errors|join:", " }}</span>{% endif %}
+                    </div>
+                </div>
+ 
+            </div><!-- /field-grid -->
+ 
+            <div class="form-actions">
+                <button type="submit" class="btn-submit">Crear Evento</button>
+                <a href="{% url 'events:mis_eventos' %}" class="btn-back">Volver a Mis Eventos</a>
+            </div>
+ 
+        </form>
     </div>
-</div>
+</section>
+
 {% endblock %}
