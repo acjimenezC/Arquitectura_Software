@@ -56,10 +56,10 @@ class Usuario(AbstractUser):
         return self.get_full_name() or self.username
     
     def es_admin(self):
-        return self.rol and self.rol.nombre == 'admin'
+        return self.is_superuser or (self.rol and self.rol.nombre == 'admin')
     
     def es_organizador(self):
-        return self.rol and self.rol.nombre == 'organizador'
+        return self.is_superuser or (self.rol and self.rol.nombre == 'organizador')
     
     def es_usuario(self):
         return self.rol and self.rol.nombre == 'usuario'

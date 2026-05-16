@@ -10,6 +10,8 @@ def require_rol(rol_requerido):
         @wraps(view_func)
         @login_required(login_url='accounts:login')
         def wrapper(request, *args, **kwargs):
+            if request.user.is_superuser:
+                return view_func(request, *args, **kwargs)
             if not request.user.rol or request.user.rol.nombre != rol_requerido:
                 messages.error(request, 'No tienes permisos para acceder a esta página.')
                 return redirect('home')
@@ -24,6 +26,8 @@ def require_rols(*roles_requeridos):
         @wraps(view_func)
         @login_required(login_url='accounts:login')
         def wrapper(request, *args, **kwargs):
+            if request.user.is_superuser:
+                return view_func(request, *args, **kwargs)
             if not request.user.rol or request.user.rol.nombre not in roles_requeridos:
                 messages.error(request, 'No tienes permisos para acceder a esta página.')
                 return redirect('home')

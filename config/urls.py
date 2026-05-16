@@ -18,12 +18,12 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from django.views.generic import TemplateView
+from apps.end_user.views import home_view
 
 urlpatterns = [
-    path('', TemplateView.as_view(template_name='landing.html'), name='home'),
+    path('', home_view, name='home'),
     path('accounts/', include('apps.accounts.urls')),
-    path('eventos/', include('apps.events.urls')),
+    path('eventos/', include(('apps.events.urls', 'events'), namespace='events')),
     path('admin/panel/', include('apps.panel_admin.urls')),
     path('access/', include('apps.access.urls')),
     path('organizer/', include('apps.organizer.urls')),

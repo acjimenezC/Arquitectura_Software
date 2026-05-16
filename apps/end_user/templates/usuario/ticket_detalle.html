@@ -1,0 +1,140 @@
+{% extends 'landing.html' %}
+{% load static %}
+
+{% block title %}Detalle de Ticket{% endblock %}
+
+{% block content %}
+<style>
+    .ticket-detail-section {
+        background-color: var(--fondo-alterno);
+        min-height: calc(100vh - 60px);
+        padding: 60px 5%;
+        margin-top: 60px;
+    }
+
+    .ticket-detail-card {
+        max-width: 820px;
+        margin: 0 auto;
+        background: var(--blanco);
+        border: 1px solid var(--bordes);
+        border-radius: 16px;
+        box-shadow: var(--shadow);
+        overflow: hidden;
+    }
+
+    .ticket-detail-header {
+        padding: 36px 40px;
+        border-bottom: 1px solid var(--bordes);
+    }
+
+    .ticket-detail-header h1 {
+        margin: 0 0 12px;
+        font-size: 2rem;
+    }
+
+    .ticket-detail-header p {
+        margin: 0;
+        color: #666;
+        font-size: 0.95rem;
+    }
+
+    .ticket-detail-body {
+        padding: 36px 40px;
+    }
+
+    .ticket-info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        margin-bottom: 30px;
+    }
+
+    .ticket-info-card {
+        background: var(--fondo-alterno);
+        border: 1px solid var(--bordes);
+        border-radius: 14px;
+        padding: 22px;
+    }
+
+    .ticket-info-card h2 {
+        margin: 0 0 12px;
+        font-size: 1.1rem;
+    }
+
+    .ticket-info-card p {
+        margin: 8px 0;
+        color: #333;
+    }
+
+    .ticket-info-card span {
+        display: block;
+        margin-top: 6px;
+        color: #555;
+    }
+
+    .ticket-detail-actions {
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .btn-ticket-back {
+        background: var(--amarillo-principal);
+        border: none;
+        color: var(--negro-principal);
+        border-radius: 10px;
+        padding: 14px 24px;
+        font-weight: 700;
+        cursor: pointer;
+        text-decoration: none;
+        transition: var(--transition);
+    }
+
+    .btn-ticket-back:hover {
+        background: var(--amarillo-hover);
+    }
+
+    @media (max-width: 780px) {
+        .ticket-info-grid {
+            grid-template-columns: 1fr;
+        }
+        .ticket-detail-header,
+        .ticket-detail-body {
+            padding: 28px;
+        }
+    }
+</style>
+
+<section class="ticket-detail-section">
+    <div class="ticket-detail-card">
+        <div class="ticket-detail-header">
+            <h1>Detalle de Ticket</h1>
+            <p>Información del evento y tu compra reciente.</p>
+        </div>
+        <div class="ticket-detail-body">
+            <div class="ticket-info-grid">
+                <div class="ticket-info-card">
+                    <h2>Evento</h2>
+                    <p><strong>Nombre:</strong> {{ ticket.evento.nombre }}</p>
+                    <p><strong>Lugar:</strong> {{ ticket.evento.lugar }}</p>
+                    <p><strong>Fecha:</strong> {{ ticket.evento.fecha|date:"l, d \d\e F \d\e Y" }}</p>
+                    <p><strong>Hora:</strong> {{ ticket.evento.hora|time:"H:i" }} hs</p>
+                    {% if ticket.evento.descripcion %}
+                        <p><strong>Descripción:</strong> {{ ticket.evento.descripcion }}</p>
+                    {% endif %}
+                </div>
+                <div class="ticket-info-card">
+                    <h2>Compra</h2>
+                    <p><strong>Tickets comprados:</strong> {{ ticket.cantidad }}</p>
+                    <p><strong>Precio unitario:</strong> ${{ precio_unitario|floatformat:2 }}</p>
+                    <p><strong>Total pagado:</strong> ${{ total_pagado|floatformat:2 }}</p>
+                    <p><strong>Fecha de compra:</strong> {{ ticket.fecha_compra|date:"d/m/Y H:i" }}</p>
+                    <p><strong>Reserva asociada:</strong> {{ ticket.reserva.estado|capfirst }}</p>
+                </div>
+            </div>
+            <div class="ticket-detail-actions">
+                <a href="{% url 'end_user:mis_tickets' %}" class="btn-ticket-back">Volver a Mis Tickets</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

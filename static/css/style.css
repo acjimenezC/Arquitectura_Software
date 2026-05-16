@@ -489,6 +489,29 @@ body {
     color: var(--amarillo-principal);
 }
 
+.nav-user-icon {
+    width: 38px;
+    height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    color: var(--blanco);
+    text-decoration: none;
+    font-size: 1rem;
+    transition: var(--transition);
+}
+
+.nav-user-icon:hover {
+    background-color: rgba(255, 255, 255, 0.12);
+    color: var(--amarillo-principal);
+}
+
+.nav-user-icon-right {
+    margin-left: auto;
+}
+
 .nav-links {
     display: flex;
     gap: 2rem;
@@ -791,12 +814,94 @@ body {
     margin-bottom: 10px;
 }
 
+.profile-section {
+    padding-top: 40px;
+}
 
+.profile-grid {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 30px;
+}
 
+.profile-card {
+    background: var(--blanco);
+    border: 1px solid var(--bordes);
+    border-radius: 24px;
+    box-shadow: var(--shadow);
+    padding: 30px;
+}
 
+.profile-overview {
+    text-align: center;
+}
 
+.profile-avatar {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin: 0 auto 24px;
+    display: block;
+}
 
+.profile-avatar-empty {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 24px;
+    background: var(--amarillo-suave);
+    color: var(--negro-principal);
+    font-size: 3rem;
+}
 
+.profile-username {
+    color: #666666;
+    margin-bottom: 14px;
+}
+
+.profile-badge {
+    display: inline-flex;
+    padding: 8px 16px;
+    border-radius: 999px;
+    background: var(--amarillo-principal);
+    color: var(--negro-principal);
+    font-weight: 700;
+}
+
+.profile-info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+    margin-bottom: 30px;
+}
+
+.profile-label {
+    font-size: 0.85rem;
+    color: #666666;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+
+.profile-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+@media (max-width: 900px) {
+    .profile-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .profile-info-grid {
+        grid-template-columns: 1fr;
+    }
+}
 
 .ticket-card {
     background: var(--blanco);

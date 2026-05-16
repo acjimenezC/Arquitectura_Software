@@ -14,13 +14,15 @@
         Mis Tickets
     </a>
 
-    <a href="{% url 'accounts:perfil' %}" class="btn-search" style="color: white; padding: 5px 5px; text-decoration: none; border-radius: 5px; margin-right: 20px;">
+    <a href="{% url 'accounts:perfil' %}" id="mi-perfil-btn" class="btn-search" style="color: white; padding: 5px 5px; text-decoration: none; border-radius: 5px; margin-right: 20px;">
         Mi Perfil
     </a>
 
-    <a href="{% url 'events:crear_evento' %}" class="btn-search" style="color: white; padding: 5px 5px; text-decoration: none; border-radius: 5px; margin-right: 20px;">
-        Crear Evento
-    </a>
+    {% if user.es_admin or user.es_organizador %}
+        <a href="{% url 'events:crear_evento' %}" class="btn-search" style="color: white; padding: 5px 5px; text-decoration: none; border-radius: 5px; margin-right: 20px;">
+            Crear Evento
+        </a>
+    {% endif %}
 </div>
 
 <section class="events-user-section">
@@ -65,4 +67,19 @@
         {% endif %}
     </div>
 </section>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const perfilBtn = document.getElementById('mi-perfil-btn');
+        if (!perfilBtn) return;
+
+        perfilBtn.addEventListener('click', function(event) {
+            const perfilUrl = new URL(perfilBtn.href);
+            if (window.location.pathname === perfilUrl.pathname) {
+                event.preventDefault();
+                window.location.reload();
+            }
+        });
+    });
+</script>
 {% endblock %}

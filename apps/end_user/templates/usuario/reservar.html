@@ -261,6 +261,7 @@
             <div class="booking-form">
                 <form method="post">
                     {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ back_url }}">
                     <div class="field-grid">
                         <label for="cantidad">Número de entradas</label>
                         <input type="number" id="cantidad" name="cantidad"
@@ -268,7 +269,11 @@
                     </div>
                     <div class="form-actions">
                         <button type="submit" class="btn-reservar">Confirmar Reserva</button>
-                        <a href="{% url 'end_user:eventos' %}" class="btn-volver">← Volver a Eventos</a>
+                        {% if back_url %}
+                            <a href="{{ back_url }}" class="btn-volver">← Volver</a>
+                        {% else %}
+                            <a href="{% url 'end_user:eventos' %}" class="btn-volver">← Volver a Eventos</a>
+                        {% endif %}
                     </div>
                 </form>
             </div>
@@ -277,7 +282,11 @@
                 No hay tickets disponibles para este evento.
             </div>
             <div style="margin-top: 20px;">
-                <a href="{% url 'end_user:eventos' %}" class="btn-volver">← Volver a Eventos</a>
+                {% if back_url %}
+                    <a href="{{ back_url }}" class="btn-volver">← Volver</a>
+                {% else %}
+                    <a href="{% url 'end_user:eventos' %}" class="btn-volver">← Volver a Eventos</a>
+                {% endif %}
             </div>
             {% endif %}
  

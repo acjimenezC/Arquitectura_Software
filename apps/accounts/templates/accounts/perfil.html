@@ -3,87 +3,79 @@
 {% block title %}Mi Perfil{% endblock %}
 
 {% block content %}
-<div class="container mt-5" style="margin-left: 50px; margin-bottom: 1000px;">
-    <div class="row">
-        <div class="col-md-3">
-            <div class="card shadow">
-                <div class="card-body text-center">
-                    {% if usuario.foto_perfil %}
-                        <img src="{{ usuario.foto_perfil.url }}" alt="{{ usuario.get_full_name }}" class="rounded-circle mb-3" width="150">
-                    {% else %}
-                        <div class="rounded-circle mx-auto mb-3" style="width: 150px; height: 150px; display: flex; align-items: center; justify-content: center; font-size: 3rem; background-color: #e8e8e8;">
-                            👤
-                        </div>
-                    {% endif %}
-                    <h5>{{ usuario.get_full_name }}</h5>
-                    <p style="color: #666666;">@{{ usuario.username }}</p>
-                    {% if usuario.rol %}
-                        <span class="badge bg-info">{{ usuario.rol.nombre|upper }}</span>
-                    {% endif %}
+<section class="section-container profile-section">
+    <div class="section-header">
+        <div class="title-area">
+            <h2>Mi Perfil</h2>
+            <div class="underline"></div>
+        </div>
+    </div>
+
+    <div class="profile-grid">
+        <div class="profile-card profile-overview">
+            {% if usuario.foto_perfil %}
+                <img src="{{ usuario.foto_perfil.url }}" alt="{{ usuario.get_full_name }}" class="profile-avatar">
+            {% else %}
+                <div class="profile-avatar profile-avatar-empty">👤</div>
+            {% endif %}
+            <h3>{{ usuario.get_full_name }}</h3>
+            <p class="profile-username">@{{ usuario.username }}</p>
+            {% if usuario.rol %}
+                <span class="profile-badge">{{ usuario.rol.nombre|upper }}</span>
+            {% endif %}
+        </div>
+
+        <div class="profile-card profile-info">
+            <div class="profile-info-grid">
+                <div>
+                    <p class="profile-label">Nombre completo</p>
+                    <p>{{ usuario.get_full_name }}</p>
+                </div>
+                <div>
+                    <p class="profile-label">Usuario</p>
+                    <p>{{ usuario.username }}</p>
+                </div>
+                <div>
+                    <p class="profile-label">Correo electrónico</p>
+                    <p>{{ usuario.email }}</p>
+                </div>
+                <div>
+                    <p class="profile-label">Teléfono</p>
+                    <p>{{ usuario.telefono|default:"No especificado" }}</p>
+                </div>
+                <div>
+                    <p class="profile-label">Rol</p>
+                    <p>{{ usuario.rol.nombre|upper|default:"Sin asignar" }}</p>
+                </div>
+                <div>
+                    <p class="profile-label">Estado</p>
+                    <p>{% if usuario.activo %}Activo{% else %}Inactivo{% endif %}</p>
+                </div>
+                {% if usuario.fecha_nacimiento %}
+                <div>
+                    <p class="profile-label">Fecha de nacimiento</p>
+                    <p>{{ usuario.fecha_nacimiento|date:"d/m/Y" }}</p>
+                </div>
+                {% endif %}
+                <div>
+                    <p class="profile-label">Fecha de registro</p>
+                    <p>{{ usuario.fecha_registro|date:"d/m/Y H:i" }}</p>
+                </div>
+                <div>
+                    <p class="profile-label">Último acceso</p>
+                    <p>{% if usuario.ultimo_acceso %}{{ usuario.ultimo_acceso|date:"d/m/Y H:i" }}{% else %}Nunca{% endif %}</p>
                 </div>
             </div>
-        </div>
-        
-        <div class="col-md-9">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0">Información de Perfil</h5>
-                </div>
-                <div class="card-body">
-                    <table class="table table-borderless"  style="width:75%;">
-                        <tbody>
-                            <tr>
-                                <td><strong>Nombre Completo</strong></td>
-                                <td>{{ usuario.get_full_name }}</td>
-                                <td><strong>Usuario</strong></td>
-                                <td>{{ usuario.username }}</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Correo Electrónico</strong></td>
-                                <td>{{ usuario.email }}</td>
-                                <td><strong>Teléfono</strong></td>
-                                <td>{{ usuario.telefono|default:"No especificado" }}</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Rol</strong></td>
-                                <td>{{ usuario.rol.nombre|upper|default:"Sin asignar" }}</td>
-                                <td><strong>Estado</strong></td>
-                                <td>
-                                    {% if usuario.activo %}
-                                        <span class="badge bg-success">Activo</span>
-                                    {% else %}
-                                        <span class="badge bg-danger">Inactivo</span>
-                                    {% endif %}
-                                </td>
-                            </tr>
-                            {% if usuario.fecha_nacimiento %}
-                            <tr>
-                                <td><strong>Fecha de Nacimiento</strong></td>
-                                <td>{{ usuario.fecha_nacimiento|date:"d/m/Y" }}</td>
-                                <td></td>
-                                <td></td>
-                            </tr>
-                            {% endif %}
-                            <tr>
-                                <td><strong>Fecha de Registro</strong></td>
-                                <td>{{ usuario.fecha_registro|date:"d/m/Y H:i" }}</td>
-                                <td><strong>Último Acceso</strong></td>
-                                <td>{% if usuario.ultimo_acceso %}{{ usuario.ultimo_acceso|date:"d/m/Y H:i" }}{% else %}Nunca{% endif %}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    
-                    <hr>
-                    <div class="mt-3">
-                        {% if usuario.es_organizador or usuario.es_admin %}
-                            <a href="{% url 'events:mis_eventos' %}" class="btn btn-primary me-2">Mis Eventos</a>
-                            <a href="{% url 'events:crear' %}" class="btn btn-primary me-2">+ Crear Evento</a>
-                        {% endif %}
-                        <a href="{% url 'accounts:logout' %}" class="btn btn-danger">Cerrar Sesión</a>
-                    </div>
-                </div>
+
+            <div class="profile-actions">
+                <a href="{% url 'end_user:mis_tickets' %}" class="btn-search">Mis Tickets</a>
+                {% if usuario.es_organizador or usuario.es_admin %}
+                    <a href="{% url 'organizer:events' %}" class="btn-search">Mis Eventos</a>
+                    <a href="{% url 'events:crear_evento' %}" class="btn-search">+ Crear Evento</a>
+                {% endif %}
+                <a href="{% url 'accounts:logout' %}" class="btn-search">Cerrar Sesión</a>
             </div>
         </div>
     </div>
-</div>
+</section>
 {% endblock %}

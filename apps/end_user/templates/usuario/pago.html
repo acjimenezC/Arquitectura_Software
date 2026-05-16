@@ -1,0 +1,178 @@
+{% extends 'landing.html' %}
+{% load static %}
+
+{% block title %}Centro de Pagos{% endblock %}
+
+{% block content %}
+<style>
+    .pago-section {
+        background-color: var(--fondo-alterno);
+        min-height: calc(100vh - 60px);
+        padding: 60px 5%;
+        margin-top: 60px;
+    }
+
+    .pago-card {
+        max-width: 620px;
+        margin: 0 auto;
+        background: var(--blanco);
+        border: 1px solid var(--bordes);
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: var(--shadow);
+    }
+
+    .pago-header {
+        background: linear-gradient(135deg, var(--negro-principal) 0%, var(--negro-suave) 100%);
+        padding: 36px 40px;
+    }
+
+    .pago-header h1 {
+        font-size: 2rem;
+        color: var(--blanco);
+        margin-bottom: 10px;
+    }
+
+    .pago-header p {
+        color: #ddd;
+        font-size: 0.95rem;
+        margin: 0;
+    }
+
+    .pago-body {
+        padding: 36px 40px;
+    }
+
+    .pago-price {
+        background: var(--amarillo-suave);
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 28px;
+        color: var(--negro-principal);
+        font-weight: 700;
+        font-size: 1rem;
+    }
+
+    .payment-grid {
+        display: grid;
+        gap: 20px;
+    }
+
+    .payment-field {
+        display: grid;
+        gap: 8px;
+    }
+
+    .payment-field label {
+        font-weight: 600;
+        color: var(--negro-principal);
+        font-size: 0.9rem;
+    }
+
+    .payment-field input {
+        width: 100%;
+        padding: 14px 16px;
+        border: 1px solid var(--bordes);
+        border-radius: 12px;
+        font-size: 1rem;
+        font-family: 'Poppins', sans-serif;
+        transition: var(--transition);
+    }
+
+    .payment-field input:focus {
+        border-color: var(--amarillo-principal);
+        box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
+        outline: none;
+    }
+
+    .btn-pagar {
+        width: 100%;
+        background-color: var(--amarillo-principal);
+        color: var(--negro-principal);
+        border: none;
+        padding: 16px 28px;
+        border-radius: 12px;
+        font-weight: 800;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .btn-pagar:hover {
+        background-color: var(--amarillo-hover);
+        transform: translateY(-1px);
+        box-shadow: 0 10px 25px rgba(212, 175, 55, 0.2);
+    }
+
+    .payment-note {
+        color: #555;
+        font-size: 0.95rem;
+        margin-bottom: 24px;
+    }
+
+    .form-errors {
+        background: #fdecea;
+        border: 1px solid #f5c6cb;
+        padding: 16px;
+        border-radius: 12px;
+        color: #722b38;
+        margin-bottom: 20px;
+    }
+
+    @media (max-width: 680px) {
+        .pago-card,
+        .pago-header,
+        .pago-body {
+            padding: 24px;
+        }
+    }
+</style>
+
+<section class="pago-section">
+    <div class="pago-card">
+        <div class="pago-header">
+            <h1>Centro de Pagos</h1>
+            <p>Pagar {{ precio_total }} dólares para reservar {{ cantidad }} ticket{% if cantidad|pluralize %}s{% endif %}.</p>
+        </div>
+
+        <div class="pago-body">
+            {% if errors %}
+                <div class="form-errors">
+                    <ul>
+                        {% for error in errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="cantidad" value="{{ cantidad }}">
+
+                <div class="pago-price">Total a pagar: <strong>${{ precio_total }} USD</strong></div>
+                <div class="payment-note">Introduce los datos de la tarjeta para completar el pago y asegurar tu reserva.</div>
+
+                <div class="payment-grid">
+                    <div class="payment-field">
+                        <label for="tarjeta">Número de tarjeta</label>
+                        <input type="text" id="tarjeta" name="tarjeta" maxlength="19" placeholder="1234 5678 9012 3456" required>
+                    </div>
+
+                    <div class="payment-field">
+                        <label for="csv">CSV</label>
+                        <input type="text" id="csv" name="csv" maxlength="4" placeholder="123" required>
+                    </div>
+
+                    <div class="payment-field">
+                        <label for="expiracion">Fecha de expiración</label>
+                        <input type="text" id="expiracion" name="expiracion" maxlength="5" placeholder="MM/AA" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-pagar">Confirmar Pago</button>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}
