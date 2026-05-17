@@ -4,6 +4,48 @@
 {% block title %}Mis Tickets{% endblock %}
 
 {% block content %}
+<style>
+    .ticket-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        gap: 16px;
+    }
+
+    .ticket-card {
+        border: 1px solid var(--bordes);
+        border-radius: 16px;
+        background: var(--blanco);
+        padding: 18px 22px;
+        box-shadow: var(--shadow);
+    }
+
+    .ticket-link {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        text-decoration: none;
+        color: inherit;
+        gap: 16px;
+    }
+
+    .ticket-link:hover {
+        background: var(--amarillo-suave);
+    }
+
+    .ticket-meta {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .ticket-price {
+        color: #666;
+        font-size: 0.95rem;
+    }
+</style>
+
 <div style="margin-bottom: 10%">
 	<h2 style="margin-top: 20px; text-align: center;">Mis Tickets</h2>
 
@@ -12,11 +54,15 @@
 			<ul class="ticket-list">
 				{% for t in tickets %}
 					<li class="ticket-card">
-						<div>
-							<strong class="ticket-tittle">{{ t.evento }}</strong><br>
-							<small class="ticket-date">Comprado: {{ t.fecha_compra }}</small>
-						</div>
-						<span class="badge bg-primary rounded-pill">{{ t.cantidad }}</span>
+						<a href="{% url 'end_user:ticket_detalle' t.id %}" class="ticket-link">
+							<div>
+								<strong class="ticket-tittle">{{ t.evento }}</strong><br>
+								<small class="ticket-date">Comprado: {{ t.fecha_compra|date:"d/m/Y H:i" }}</small>
+							</div>
+							<div class="ticket-meta">
+								<span class="badge bg-primary rounded-pill">{{ t.cantidad }}</span>
+							</div>
+						</a>
 					</li>
 				{% endfor %}
 			</ul>
@@ -30,10 +76,12 @@
 				<a href="{% url 'end_user:eventos' %}" class="btn-search" style="color: white; padding: 5px 5px; text-decoration: none; border-radius: 5px; margin: 10px auto;">
 					Ver Eventos
 				</a>
-				<p>O crea tus propios eventos.</p>
-				<a href="{% url 'events:crear_evento' %}" class="btn-search" style="color: white; padding: 5px 5px; text-decoration: none; border-radius: 5px; margin: 10px;">
-					Crear Evento
-				</a>
+{% if user.es_admin or user.es_organizador %}
+                    <p>O crea tus propios eventos.</p>
+                    <a href="{% url 'events:crear_evento' %}" class="btn-search" style="color: white; padding: 5px 5px; text-decoration: none; border-radius: 5px; margin: 10px;">
+                        Crear Evento
+                    </a>
+                {% endif %}
 				<div class="empty-state">
 					{% endif %}
 				</div>

@@ -48,6 +48,15 @@
                         {% if form.lugar.errors %}<span class="field-error">{{ form.lugar.errors|join:", " }}</span>{% endif %}
                     </div>
                 </div>
+
+                <!-- Categoría -->
+                <div class="field-row">
+                    <label for="{{ form.categoria.id_for_label }}">Categoría</label>
+                    <div class="field-input-wrap">
+                        {{ form.categoria }}
+                        {% if form.categoria.errors %}<span class="field-error">{{ form.categoria.errors|join:", " }}</span>{% endif %}
+                    </div>
+                </div>
  
                 <!-- Fecha + Hora -->
                 <div class="field-row">

@@ -12,6 +12,16 @@ class Evento(models.Model):
     lugar = models.CharField(max_length=255)
     fecha = models.DateField()
     hora = models.TimeField()
+    categoria = models.CharField(
+        max_length=50,
+        choices=[
+            ('Empresariales', 'Empresariales'),
+            ('Conciertos', 'Conciertos'),
+            ('Deportes', 'Deportes'),
+            ('Festivales', 'Festivales'),
+        ],
+        default='Empresariales'
+    )
     precio = models.DecimalField(max_digits=8, decimal_places=2, default=0.00)
     descripcion = models.TextField(blank=True)
     organizador = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='eventos')

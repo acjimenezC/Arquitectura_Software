@@ -344,11 +344,19 @@
     <nav>
         <a href="{% url 'home' %}" class="logo">TICKER<span>FISHER</span></a>
         <div class="nav-links">
+            <a href="http://localhost:8000/">Principal</a>
             <a href="{% url 'events:list' %}" style="color: var(--amarillo-principal);">Explorar Eventos</a>
-            <a href="#">Corporativo</a>
-            <a href="#">Soporte</a>
             {% if user.is_authenticated %}
+                {% if user.es_admin %}
+                    <a href="{% url 'end_user:mis_tickets' %}">Mis Tickets</a>
+                    <a href="{% url 'events:crear_evento' %}">Crear Evento</a>
+                {% elif user.es_organizador %}
+                    <a href="{% url 'events:crear_evento' %}">Crear Evento</a>
+                {% else %}
+                    <a href="{% url 'end_user:mis_tickets' %}">Mis Tickets</a>
+                {% endif %}
                 <a href="{% url 'accounts:logout' %}" class="btn-login">Cerrar Sesión</a>
+                <a href="{% url 'accounts:perfil' %}" class="nav-user-icon nav-user-icon-right" title="Mi Perfil">👤</a>
             {% else %}
                 <a href="{% url 'accounts:login' %}" class="btn-login">Acceso Cliente</a>
             {% endif %}
@@ -488,7 +496,11 @@
                                 </svg>
                                 {{ evento.hora|time:"H:i" }} hs
                             </span>
-                            <a href="{% url 'events:detail' evento.pk %}" class="btn-book">Ver detalle</a>
+                            {% if categoria or query or lugar_seleccionado or fecha_seleccionada %}
+                                <a href="{% url 'end_user:reservar' evento.pk %}?next={{ request.get_full_path|urlencode }}" class="btn-book">Ver detalle</a>
+                            {% else %}
+                                <a href="{% url 'events:detail' evento.pk %}" class="btn-book">Ver detalle</a>
+                            {% endif %}
                         </div>
                     </div>
                 </div>

@@ -23,53 +23,62 @@
 
         <div class="organizer-content">
             <div class="organizer-main">
-                <div class="events-list">
-                    <p class="list-placeholder">Listado de eventos creados</p>
-                    <!-- Los eventos se mostrarán aquí cuando se agreguen -->
+            <div class="events-list">
+                {% if eventos %}
+                    <div class="events-grid">
+                        {% for evento in eventos %}
+                            <article class="event-card">
+                                <div class="event-card-header">
+                                    <div>
+                                        <h3>{{ evento.nombre }}</h3>
+                                        <p class="event-meta">{{ evento.lugar }} · {{ evento.fecha|date:'d/m/Y' }} {{ evento.hora|time:'H:i' }}</p>
+                                    </div>
+                                    <span class="status {% if evento.activo %}active{% else %}inactive{% endif %}">{% if evento.activo %}Activo{% else %}Inactivo{% endif %}</span>
+                                </div>
+                                <div class="event-card-body">
+                                    <div class="event-stat">
+                                        <span class="event-stat-label">Precio</span>
+                                        <span>${{ evento.precio }}</span>
+                                    </div>
+                                    <div class="event-stat">
+                                        <span class="event-stat-label">Reservas</span>
+                                        <span>{{ evento.tickets_vendidos }}</span>
+                                    </div>
+                                    <div class="event-stat">
+                                        <span class="event-stat-label">Disponibles</span>
+                                        <span>{{ evento.tickets_disponibles }}</span>
+                                    </div>
+                                    <div class="event-stat">
+                                        <span class="event-stat-label">Categoría</span>
+                                        <span>{{ evento.categoria }}</span>
+                                    </div>
+                                </div>
+                            </article>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="list-placeholder">No tienes eventos creados todavía.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="organizer-sidebar">
+            <div class="sidebar-card stats">
+                <h3>Estadísticas</h3>
+                <div class="stats-item">
+                    <span class="stat-label">Total de Eventos</span>
+                    <span class="stat-value">{{ total_eventos }}</span>
+                </div>
+                <div class="stats-item">
+                    <span class="stat-label">Reservas Totales</span>
+                    <span class="stat-value">{{ total_reservas }}</span>
+                </div>
+                <div class="stats-item">
+                    <span class="stat-label">Ingresos</span>
+                    <span class="stat-value">${{ ingresos_totales }}</span>
                 </div>
             </div>
-
-            <div class="organizer-sidebar">
-                <div class="sidebar-card">
-                    <h3>Acciones Rápidas</h3>
-                    <ul class="action-list">
-                        <li>
-                            <a href="{% url 'events:crear_evento' %}" class="action-link">
-                                <span class="action-icon">➕</span>
-                                <span>Nuevo Evento</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="action-link">
-                                <span class="action-icon">📊</span>
-                                <span>Ver Reportes</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{% url 'organizer:reservations' %}" class="action-link">
-                                <span class="action-icon">👥</span>
-                                <span>Gestionar Reservas</span>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-
-                <div class="sidebar-card stats">
-                    <h3>Estadísticas</h3>
-                    <div class="stats-item">
-                        <span class="stat-label">Total de Eventos</span>
-                        <span class="stat-value">0</span>
-                    </div>
-                    <div class="stats-item">
-                        <span class="stat-label">Reservas Totales</span>
-                        <span class="stat-value">0</span>
-                    </div>
-                    <div class="stats-item">
-                        <span class="stat-label">Ingresos</span>
-                        <span class="stat-value">$0.00</span>
-                    </div>
-                </div>
-            </div>
+        </div>
         </div>
     </div>
 </section>
@@ -146,9 +155,92 @@
 
     .events-list {
         min-height: 300px;
+        display: grid;
+        gap: 20px;
+    }
+
+    .events-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 20px;
+    }
+
+    .event-card {
+        background-color: var(--blanco);
+        border: 1px solid var(--bordes);
+        border-radius: 18px;
+        padding: 24px;
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.06);
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .event-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 24px 50px rgba(0, 0, 0, 0.12);
+    }
+
+    .event-card-header {
         display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 20px;
+        margin-bottom: 18px;
+    }
+
+    .event-card-header h3 {
+        font-size: 1.15rem;
+        margin-bottom: 8px;
+        color: var(--negro-principal);
+    }
+
+    .event-meta {
+        color: #6b7280;
+        font-size: 0.95rem;
+    }
+
+    .status {
+        padding: 8px 14px;
+        border-radius: 999px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .status.active {
+        background-color: #ecfdf5;
+        color: #166534;
+    }
+
+    .status.inactive {
+        background-color: #f8fafc;
+        color: #475569;
+        border: 1px solid #cbd5e1;
+    }
+
+    .event-card-body {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+    }
+
+    .event-stat {
+        display: flex;
+        justify-content: space-between;
         align-items: center;
-        justify-content: center;
+        padding: 16px;
+        border-radius: 14px;
+        background-color: var(--fondo-alterno);
+        border: 1px solid var(--bordes);
+    }
+
+    .event-stat-label {
+        font-size: 0.95rem;
+        color: #4b5563;
+    }
+
+    .event-stat span:last-child {
+        font-weight: 700;
+        color: var(--negro-principal);
     }
 
     .list-placeholder {

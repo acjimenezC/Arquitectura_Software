@@ -5,7 +5,7 @@ from .models import Evento
 class EventoForm(forms.ModelForm):
     class Meta:
         model = Evento
-        fields = ['nombre', 'lugar', 'fecha', 'hora', 'precio', 'capacidad', 'descripcion']
+        fields = ['nombre', 'lugar', 'fecha', 'hora', 'categoria', 'precio', 'capacidad', 'descripcion']
         widgets = {
             'nombre': forms.TextInput(attrs={
                 'class': 'form-control',
@@ -22,6 +22,9 @@ class EventoForm(forms.ModelForm):
             'hora': forms.TimeInput(attrs={
                 'class': 'form-control',
                 'type': 'time'
+            }),
+            'categoria': forms.Select(attrs={
+                'class': 'form-control'
             }),
             'precio': forms.NumberInput(attrs={
                 'class': 'form-control',
