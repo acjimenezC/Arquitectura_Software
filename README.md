@@ -202,8 +202,12 @@ Arquitectura_Software/
 ├── manage.py            
 ├── docker-compose.yml   
 ├── dockerfile           
-└── requirements.txt     
+└── requirements.txt
 ```
+
+
+<img width="630" height="750" alt="image" src="https://github.com/user-attachments/assets/82354113-71c6-4d7f-84c2-94324750ee37" />
+
 
 ---
 
